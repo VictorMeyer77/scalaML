@@ -1,7 +1,7 @@
 package com.victormeyer.scalaml.data
 
 
-class Matrix[T](rows: Int, cols: Int, initValue: T) {
+class Matrix[T](rows: Int, cols: Int, initValue: T=null.asInstanceOf[T]) {
 
   // create
 
@@ -115,7 +115,7 @@ class Matrix[T](rows: Int, cols: Int, initValue: T) {
       } else {
         for(i <- this.matrix.indices)
           for(j <- this.matrix(i).indices)
-            if(!matrix.get(i)(j).equals(this.matrix(i)(j)))
+            if(matrix.get(i)(j) != this.matrix(i)(j))
               equal = false
       }
     }
@@ -136,8 +136,8 @@ class Matrix[T](rows: Int, cols: Int, initValue: T) {
 
 object Matrix {
 
-  private def vectorToMatrix[T](matrix: Matrix[T], vector: Vector[Vector[T]]): Matrix[T] ={
-    val newMatrix: Matrix[T] = matrix.clone
+  def vectorToMatrix[T](vector: Vector[Vector[T]]): Matrix[T] ={
+    val newMatrix: Matrix[T] = new Matrix(0, 0)
     newMatrix.set(vector)
     newMatrix
   }
@@ -151,7 +151,7 @@ object Matrix {
     for(i <- 0 until rows){
       vectorBuffer = vectorBuffer updated (i, flatMatrix.slice(i * cols, i * cols + cols))
     }
-    vectorToMatrix(matrix, vectorBuffer)
+    vectorToMatrix(vectorBuffer)
   }
 
   def select[T](matrix: Matrix[T], rows: Seq[Int]=Seq(), cols: Seq[Int]=Seq()): Matrix[T] ={
@@ -171,7 +171,7 @@ object Matrix {
     } else {
       selectRows
     }
-    vectorToMatrix(matrix, selectVector)
+    vectorToMatrix(selectVector)
   }
 
 }

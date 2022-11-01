@@ -16,18 +16,19 @@ class MatrixTest extends AnyFlatSpec {
 
     val matrixA: Matrix[Int] = new Matrix(2, 3, 5)
     val matrixB: Matrix[Int] = new Matrix(0, 0, 5)
+    val matrixC: Matrix[Int] = new Matrix(2, 2)
 
     // when
 
     val vectorA: Vector[Vector[Int]] = matrixA.get
     val vectorB: Vector[Vector[Int]] = matrixB.get
+    val vectorC: Vector[Vector[Int]] = matrixC.get
 
     // then
 
-    vectorA.foreach(row => {
-      assert(row.equals(Vector(5, 5, 5)))
-    })
+    assert(vectorA.equals(Vector(Vector(5, 5, 5), Vector(5, 5, 5))))
     assert(vectorB.equals(Vector()))
+    assert(vectorC.equals(Vector(Vector(null, null), Vector(null, null))))
 
   }
 
@@ -37,7 +38,7 @@ class MatrixTest extends AnyFlatSpec {
 
     val matrixA: Matrix[Int] = new Matrix(2, 3, 5)
     val matrixB: Matrix[Int] = new Matrix(5416, 9817, 50)
-    val matrixC: Matrix[Int] = new Matrix(712, 3817, 0)
+    val matrixC: Matrix[Int] = new Matrix(712, 3817)
     val matrixD: Matrix[Int] = new Matrix(0, 0, 0)
 
     // when
@@ -84,7 +85,7 @@ class MatrixTest extends AnyFlatSpec {
 
     // given
 
-    val matrix: Matrix[Int] = new Matrix(3, 5, 5)
+    val matrix: Matrix[Int] = new Matrix(3, 5)
 
     // when
 
@@ -325,18 +326,22 @@ class MatrixTest extends AnyFlatSpec {
     val matrixD: Matrix[Matrix[Double]] = new Matrix(761, 547, new Matrix(3, 7, 0.0))
     val matrixE: Matrix[Int] = new Matrix(0, 0, 0)
     val matrixF: Matrix[Int] = new Matrix(0, 0, 0)
+    val matrixG: Matrix[Int] = new Matrix(3, 3)
+    val matrixH: Matrix[Int] = new Matrix(3, 3)
 
     // when
 
     val equalA: Boolean = matrixA.equals(matrixB)
     val equalB: Boolean = matrixC.equals(matrixD)
     val equalC: Boolean = matrixE.equals(matrixF)
+    val equalD: Boolean = matrixG.equals(matrixH)
 
     // then
 
     assert(equalA)
     assert(equalB)
     assert(equalC)
+    assert(equalD)
 
   }
 
@@ -345,7 +350,7 @@ class MatrixTest extends AnyFlatSpec {
     // given
 
     val matrixA: Matrix[Int] = new Matrix(5416, 9817, 50)
-    val matrixB: Matrix[Int] = new Matrix(5416, 9817, 5)
+    val matrixB: Matrix[Int] = new Matrix(5416, 9817)
     val matrixC: Matrix[Int] = new Matrix(546, 9817, 50)
 
     // when
@@ -370,12 +375,14 @@ class MatrixTest extends AnyFlatSpec {
     val matrixB: Matrix[Int] = new Matrix(3, 5, 5)
     matrixB.set(Vector(Vector(1, 2, 3, 4, 5), Vector(6, 7, 8, 9, 10), Vector(11, 12, 13, 14, 15)))
     val matrixC: Matrix[Int] = new Matrix(0, 0, 0)
+    val matrixD: Matrix[Float] = new Matrix(2, 2)
 
     // when
 
     val matrixStrA: String = matrixA.toString
     val matrixStrB: String = matrixB.toString
     val matrixStrC: String = matrixC.toString
+    val matrixStrD: String = matrixD.toString
 
     // then
 
@@ -383,6 +390,7 @@ class MatrixTest extends AnyFlatSpec {
     assert(matrixStrA.split("\n")(0).length == 105)
     assert(matrixStrB == "[[1, 2, 3, 4, 5]\n[6, 7, 8, 9, 10]\n[11, 12, 13, 14, 15]]")
     assert(matrixStrC == "[]")
+    assert(matrixStrD == "[[null, null]\n[null, null]]")
 
   }
 
@@ -405,6 +413,24 @@ class MatrixTest extends AnyFlatSpec {
   /**
    * Ops
    */
+
+  "Matrix.vectorToMatrix" should "return matrix with vector" in {
+
+    // given
+
+    val vector: Vector[Vector[String]] = Vector(Vector("apple", "banana"), Vector("butter", "sugar"))
+    val targetMatrix: Matrix[String] = new Matrix(0, 0)
+    targetMatrix.set(vector)
+
+    // when
+
+    val matrix: Matrix[String] = Matrix.vectorToMatrix(vector)
+
+    // then
+
+    assert(matrix.equals(targetMatrix))
+
+  }
 
   "Matrix.reshape" should "raise exception when dimensions are wrong" in {
 
@@ -431,7 +457,7 @@ class MatrixTest extends AnyFlatSpec {
 
     // given
 
-    val matrixA: Matrix[Int] = new Matrix(3, 4, 0)
+    val matrixA: Matrix[Int] = new Matrix(3, 4)
     matrixA.set(Vector(Vector(1, 2, 3, 4), Vector(5, 6, 7, 8), Vector(9, 10, 11, 12)))
 
     // when
