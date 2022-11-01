@@ -136,6 +136,12 @@ class Matrix[T](rows: Int, cols: Int, initValue: T) {
 
 object Matrix {
 
+  private def vectorToMatrix[T](matrix: Matrix[T], vector: Vector[Vector[T]]): Matrix[T] ={
+    val newMatrix: Matrix[T] = matrix.clone
+    newMatrix.set(vector)
+    newMatrix
+  }
+
   def reshape[T](matrix: Matrix[T], rows: Int, cols: Int): Matrix[T] ={
     if(matrix.shape._1 * matrix.shape._2 != rows * cols){
       throw new IllegalArgumentException(s"Invalid dimensions: ${matrix.shape._1} * ${matrix.shape._2} != $rows * $cols")
@@ -145,9 +151,27 @@ object Matrix {
     for(i <- 0 until rows){
       vectorBuffer = vectorBuffer updated (i, flatMatrix.slice(i * cols, i * cols + cols))
     }
-    val newMatrix: Matrix[T] = matrix.clone
-    newMatrix.set(vectorBuffer)
-    newMatrix
+    vectorToMatrix(matrix, vectorBuffer)
+  }
+
+  def select[T](matrix: Matrix[T], rows: Seq[Int]=Seq(), cols: Seq[Int]=Seq()): Matrix[T] ={
+    val shape: (Int, Int) = matrix.shape
+    if(rows.exists(index => index >= shape._1)){
+      throw new IllegalArgumentException(s"Invalid row indexes: [${rows.mkString(", ")}] >= ${shape._1}")
+    } else if(cols.exists(index => index >= shape._2)){
+      throw new IllegalArgumentException(s"Invalid column indexes: [${cols.mkString(", ")}] >= ${shape._2}")
+    }
+    val selectRows: Vector[Vector[T]] = if(rows.nonEmpty) {
+      matrix.get.filter(row => rows.contains(matrix.get.indexOf(row)))
+    } else {
+      matrix.get
+    }
+    val selectVector: Vector[Vector[T]] = if(cols.nonEmpty) {
+      selectRows.map(row => row.filter(col => cols.contains(row.indexOf(col))))
+    } else {
+      selectRows
+    }
+    vectorToMatrix(matrix, selectVector)
   }
 
 }

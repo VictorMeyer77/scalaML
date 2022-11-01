@@ -448,4 +448,54 @@ class MatrixTest extends AnyFlatSpec {
 
   }
 
+  "Matrix.select" should "raise exception when invalid indexes" in {
+
+    // given
+
+    val matrix: Matrix[Int] = new Matrix(3, 4, 0)
+    var errorMessageA: String = ""
+    var errorMessageB: String = ""
+
+    // when
+
+    try {
+      Matrix.select(matrix, Seq(10, 12, 1), Seq())
+    } catch {
+      case e: IllegalArgumentException => errorMessageA = e.getMessage
+    }
+
+    try {
+      Matrix.select(matrix, Seq(), Seq(15, 2, 5))
+    } catch {
+      case e: IllegalArgumentException => errorMessageB = e.getMessage
+    }
+
+    // then
+
+    assert(errorMessageA == "Invalid row indexes: [10, 12, 1] >= 3")
+    assert(errorMessageB == "Invalid column indexes: [15, 2, 5] >= 4")
+
+  }
+
+  it should "return selected rows and columns" in {
+
+    // given
+
+    val matrix: Matrix[Int] = new Matrix(3, 4, 0)
+    matrix.set(Vector(Vector(1, 2, 3, 4), Vector(5, 6, 7, 8), Vector(9, 10, 11, 12)))
+
+    // when
+
+    val selectMatrixA: Matrix[Int] = Matrix.select(matrix, rows=Seq(0, 2))
+    val selectMatrixB: Matrix[Int] = Matrix.select(matrix, cols=Seq(1, 3))
+    val selectMatrixC: Matrix[Int] = Matrix.select(matrix, rows=Seq(0, 2), cols=Seq(1, 3))
+
+    // then
+
+    assert(selectMatrixA.get.equals(Vector(Vector(1, 2, 3, 4), Vector(9, 10, 11, 12))))
+    assert(selectMatrixB.get.equals(Vector(Vector(2, 4), Vector(6, 8), Vector(10, 12))))
+    assert(selectMatrixC.get.equals(Vector(Vector(2, 4), Vector(10, 12))))
+
+  }
+
 }
