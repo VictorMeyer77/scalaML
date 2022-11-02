@@ -97,6 +97,27 @@ class MatrixTest extends AnyFlatSpec {
 
   }
 
+  it should "raise exception with invalid vectors" in {
+
+    // given
+
+    val matrix: Matrix[Int] = new Matrix(3, 3)
+    var errorMessage: String = ""
+
+    // when
+
+    try {
+      matrix.set(Vector(Vector(1, 2), Vector(1)))
+    } catch {
+      case e: IllegalArgumentException => errorMessage = e.getMessage
+    }
+
+    // then
+
+    assert(errorMessage == "Invalid shape: different sizes of vectors found (2, 1)")
+
+  }
+
   "Matrix.setValue" should "raise exception with invalid index" in {
 
     // given

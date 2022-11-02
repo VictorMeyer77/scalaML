@@ -24,6 +24,9 @@ class Matrix[T](rows: Int, cols: Int, initValue: T=null.asInstanceOf[T]) {
   // update
 
   def set(matrix: Vector[Vector[T]]): Unit ={
+    if(matrix.map(row => row.length).distinct.length > 1){
+      throw new IllegalArgumentException(s"Invalid shape: different sizes of vectors found (${matrix.map(row => row.length).distinct.mkString(", ")})")
+    }
     this.matrix = matrix
   }
 
