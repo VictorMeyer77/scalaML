@@ -1,18 +1,31 @@
 package com.victormeyer.scalaml.data
 
-
+/** Matrix 2D compose with Vectors.
+ * Both of row and column operations are available, but it's optimize on row operations.
+ * Type of this Matrix is generic, but for many methods, Numeric types are mandatory.
+ *
+ * @param rows Number of rows
+ * @param cols Number of columns
+ * @param initValue Default value for each cell (optional)
+ * @tparam T Type of matrix
+ */
 class Matrix[T](rows: Int, cols: Int, initValue: T=null.asInstanceOf[T]) {
-
-  // create
 
   private var matrix: Vector[Vector[T]] = Vector.fill(rows)(Vector.fill(cols)(initValue))
 
-  // read
-
+  /** Get the matrix
+   *
+   * @return Vector of vectors composing matrix
+   */
   def get: Vector[Vector[T]] = matrix
 
+  /** Print matrix in a formatted string */
   def show(): Unit = println(toString)
 
+  /** Get shape of the matrix
+   *
+   * @return Tuple of integer composed by number of rows and number of columns
+   */
   def shape: (Int, Int) = {
     if(matrix.nonEmpty){
       (matrix.length, matrix(0).length)
@@ -21,8 +34,10 @@ class Matrix[T](rows: Int, cols: Int, initValue: T=null.asInstanceOf[T]) {
     }
   }
 
-  // update
-
+  /** Replace current vectors with given vectors
+   *
+   * @param matrix New vector of vectors
+   */
   def set(matrix: Vector[Vector[T]]): Unit ={
     if(matrix.map(row => row.length).distinct.length > 1){
       throw new IllegalArgumentException(s"Invalid shape: different sizes of vectors found (${matrix.map(row => row.length).distinct.mkString(", ")})")
@@ -30,6 +45,12 @@ class Matrix[T](rows: Int, cols: Int, initValue: T=null.asInstanceOf[T]) {
     this.matrix = matrix
   }
 
+  /** Replace value of a specific cell
+   *
+   * @param row Row index
+   * @param col Column index
+   * @param value New value
+   */
   def setValue(row: Int, col: Int, value: T): Unit ={
     if(row >= shape._1){
       throw new IllegalArgumentException(s"Invalid row index: $row >= ${shape._1}")
@@ -39,6 +60,11 @@ class Matrix[T](rows: Int, cols: Int, initValue: T=null.asInstanceOf[T]) {
     matrix = matrix updated (row, matrix(row) updated (col, value))
   }
 
+  /** Replace entire row
+   *
+   * @param index Row index
+   * @param row New row
+   */
   def setRow(index: Int, row: Vector[T]): Unit ={
     if(row.length != shape._2){
       throw new IllegalArgumentException(s"Invalid row size: ${row.length} != ${shape._2}")
@@ -48,6 +74,11 @@ class Matrix[T](rows: Int, cols: Int, initValue: T=null.asInstanceOf[T]) {
     matrix = matrix updated (index, row)
   }
 
+  /** Replace entire column
+   *
+   * @param index Column index
+   * @param column New column
+   */
   def setColumn(index: Int, column: Vector[T]): Unit ={
     if(column.length != shape._1){
       throw new IllegalArgumentException(s"Invalid column size: ${column.length} != ${shape._1}")
@@ -57,8 +88,10 @@ class Matrix[T](rows: Int, cols: Int, initValue: T=null.asInstanceOf[T]) {
     matrix = (matrix.transpose updated (index, column)).transpose
   }
 
-  // delete
-
+  /** Delete specific row
+   *
+   * @param index Row index
+   */
   def dropRow(index: Int): Unit ={
     if(index >= shape._1){
       throw new IllegalArgumentException(s"Invalid row index: $index >= ${shape._1}")
@@ -66,6 +99,10 @@ class Matrix[T](rows: Int, cols: Int, initValue: T=null.asInstanceOf[T]) {
     matrix = matrix.filter(row => matrix.indexOf(row) != index)
   }
 
+  /** Delete specific column
+   *
+   * @param index Column Index
+   */
   def dropColumn(index: Int): Unit ={
     if(index >= shape._2){
       throw new IllegalArgumentException(s"Invalid column index: $index >= ${shape._2}")
@@ -73,8 +110,6 @@ class Matrix[T](rows: Int, cols: Int, initValue: T=null.asInstanceOf[T]) {
     val matrixTranspose: Vector[Vector[T]] = matrix.transpose
     matrix = matrixTranspose.filter(row => matrixTranspose.indexOf(row) != index).transpose
   }
-
-  // override
 
   override def toString: String ={
     val matrixStr: StringBuilder = new StringBuilder("[")
@@ -84,6 +119,11 @@ class Matrix[T](rows: Int, cols: Int, initValue: T=null.asInstanceOf[T]) {
     truncateString(matrixStr.append("]").mkString)
   }
 
+  /** Format matrix string
+   *
+   * @param matrixStr Matrix issued of toString
+   * @return Formatted string
+   */
   private def truncateString(matrixStr: String): String ={
     val truncateMatrixStr: StringBuilder = new StringBuilder()
     val rows: Array[String] = matrixStr.split("\n")
@@ -133,17 +173,31 @@ class Matrix[T](rows: Int, cols: Int, initValue: T=null.asInstanceOf[T]) {
 }
 
 /**
- * Matrix operations
+ * Group of methods for advanced processing of Matrix.
+ * Each of these methods returns another instance of Matrix.
  */
-
 object Matrix {
 
+  /** Convert a vector of vectors to an instance of Matrix
+   *
+   * @param vector Vector of vectors to convert
+   * @tparam T Type of matrix
+   * @return Instance of matrix with given vector
+   */
   def vectorToMatrix[T](vector: Vector[Vector[T]]): Matrix[T] ={
     val newMatrix: Matrix[T] = new Matrix(0, 0)
     newMatrix.set(vector)
     newMatrix
   }
 
+  /** Resize matrix
+   *
+   * @param matrix Matrix to resize
+   * @param rows New number of rows
+   * @param cols New columns of rows
+   * @tparam T Type of matrix
+   * @return Resized matrix
+   */
   def reshape[T](matrix: Matrix[T], rows: Int, cols: Int): Matrix[T] ={
     if(matrix.shape._1 * matrix.shape._2 != rows * cols){
       throw new IllegalArgumentException(s"Invalid dimensions: ${matrix.shape._1} * ${matrix.shape._2} != $rows * $cols")
@@ -156,6 +210,14 @@ object Matrix {
     vectorToMatrix(vectorBuffer)
   }
 
+  /** Select given rows or/and columns of Matrix
+   *
+   * @param matrix Matrix to select
+   * @param rows Row indexes to select (optional)
+   * @param cols Column indexes to select (optional)
+   * @tparam T Type of matrix
+   * @return Matrix with selected rows and columns
+   */
   def select[T](matrix: Matrix[T], rows: Seq[Int]=Seq(), cols: Seq[Int]=Seq()): Matrix[T] ={
     val shape: (Int, Int) = matrix.shape
     if(rows.exists(index => index >= shape._1)){
@@ -176,11 +238,25 @@ object Matrix {
     vectorToMatrix(selectVector)
   }
 
+  /** Return sum of each matrix rows
+   *
+   * @param matrix Matrix to calculate sums
+   * @param numeric Numeric instance
+   * @tparam T Type of matrix
+   * @return Matrix of sums
+   */
   def sumRow[T](matrix: Matrix[T])(implicit numeric: Numeric[T]): Matrix[T] ={
     val vectorSum: Vector[Vector[T]] = matrix.get.map(vector => Vector(vector.sum))
     vectorToMatrix(vectorSum)
   }
 
+  /** Return sum of each matrix columns
+   *
+   * @param matrix Matrix to calculate sums
+   * @param numeric Numeric instance
+   * @tparam T Type of matrix
+   * @return Matrix of sums
+   */
   def sumColumn[T](matrix: Matrix[T])(implicit numeric: Numeric[T]): Matrix[T] ={
     val vectorSum: Vector[Vector[T]] = Vector(matrix.get.transpose.map(_.sum))
     vectorToMatrix(vectorSum)
