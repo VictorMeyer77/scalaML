@@ -51,9 +51,7 @@ class Matrix[T](rows: Int, cols: Int, initValue: T=null.asInstanceOf[T]) {
     } else if(index >= shape._2){
       throw new IllegalArgumentException(s"Invalid column index: $index >= ${shape._2}")
     }
-    for(i <- column.indices){
-      matrix = matrix updated (i, matrix(i) updated (index, column(i)))
-    }
+    matrix = (matrix.transpose updated (index, column)).transpose
   }
 
   // delete
@@ -69,9 +67,8 @@ class Matrix[T](rows: Int, cols: Int, initValue: T=null.asInstanceOf[T]) {
     if(index >= shape._2){
       throw new IllegalArgumentException(s"Invalid column index: $index >= ${shape._2}")
     }
-    for(i <- matrix.indices){
-      matrix = matrix updated (i, matrix(i).filter(row => matrix(i).indexOf(row) != index))
-    }
+    val matrixTranspose: Vector[Vector[T]] = matrix.transpose
+    matrix = matrixTranspose.filter(row => matrixTranspose.indexOf(row) != index).transpose
   }
 
   // override
@@ -113,10 +110,12 @@ class Matrix[T](rows: Int, cols: Int, initValue: T=null.asInstanceOf[T]) {
       if(matrix.shape != shape){
         equal = false
       } else {
-        for(i <- this.matrix.indices)
-          for(j <- this.matrix(i).indices)
-            if(matrix.get(i)(j) != this.matrix(i)(j))
-              equal = false
+        var i: Int = 0
+        while(i < this.matrix.length && equal){
+          if(matrix.get(i) != this.matrix(i))
+            equal = false
+          i += 1
+        }
       }
     }
     equal
