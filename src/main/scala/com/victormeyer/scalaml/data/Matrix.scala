@@ -174,4 +174,14 @@ object Matrix {
     vectorToMatrix(selectVector)
   }
 
+  def sumRow[T](matrix: Matrix[T])(implicit numeric: Numeric[T]): Matrix[T] ={
+    val vectorSum: Vector[Vector[T]] = matrix.get.map(vector => Vector(vector.sum))
+    vectorToMatrix(vectorSum)
+  }
+
+  def sumColumn[T](matrix: Matrix[T])(implicit numeric: Numeric[T]): Matrix[T] ={
+    val vectorSum: Vector[Vector[T]] = Vector(matrix.get.transpose.map(_.sum))
+    vectorToMatrix(vectorSum)
+  }
+
 }

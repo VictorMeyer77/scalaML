@@ -524,4 +524,38 @@ class MatrixTest extends AnyFlatSpec {
 
   }
 
+  "Matrix.sumRow" should "return matrix of row sum" in {
+
+    // given
+
+    val matrix: Matrix[Int] = new Matrix(3, 4)
+    matrix.set(Vector(Vector(1, 2, 3, 4), Vector(5, 6, 7, 8), Vector(9, 10, 11, 12)))
+
+    // when
+
+    val sumMatrix: Matrix[Int] = Matrix.sumRow(matrix)
+
+    // then
+
+    assert(sumMatrix.get.equals(Vector(Vector(10), Vector(26), Vector(42))))
+
+  }
+
+  "Matrix.sumColumn" should "return matrix of row sum" in {
+
+    // given
+
+    val matrix: Matrix[Int] = new Matrix(3, 4)
+    matrix.set(Vector(Vector(1, 2, 3, 4), Vector(5, 6, 7, 8), Vector(9, 10, 11, 12)))
+
+    // when
+
+    val sumMatrix: Matrix[Int] = Matrix.sumColumn(matrix)
+
+    // then
+
+    assert(sumMatrix.get.equals(Vector(Vector(15, 18, 21, 24))))
+
+  }
+
 }
