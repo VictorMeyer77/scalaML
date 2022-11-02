@@ -6,10 +6,6 @@ import java.io.ByteArrayOutputStream
 
 class MatrixTest extends AnyFlatSpec {
 
-  /**
-   * read
-   */
-
   "Matrix" should "initialize matrix with default value" in {
 
     // given
@@ -76,10 +72,6 @@ class MatrixTest extends AnyFlatSpec {
     assert(stream.toString == "[[1, 2, 3, 4, 5]\n[6, 7, 8, 9, 10]\n[11, 12, 13, 14, 15]]\n")
 
   }
-
-  /**
-   * update
-   */
 
   "Matrix.set" should "change matrix" in {
 
@@ -253,10 +245,6 @@ class MatrixTest extends AnyFlatSpec {
 
   }
 
-  /**
-   * delete
-   */
-
   "Matrix.dropRow" should "raise exception with invalid index" in {
 
     // given
@@ -333,9 +321,93 @@ class MatrixTest extends AnyFlatSpec {
 
   }
 
-  /**
-   * override
-   */
+  "Matrix :+" should "add element to each cell of matrix" in {
+
+    // given
+
+    val matrix: Matrix[Int] = Matrix.vectorToMatrix(Vector(Vector(1, 2, 3), Vector(2, 3, 4), Vector(5, 6, 7)))
+
+    // when
+
+    val computeMatrix: Matrix[Int] = matrix :+ 6
+
+    // then
+
+    assert(computeMatrix.equals(Matrix.vectorToMatrix(Vector(Vector(7, 8, 9), Vector(8, 9, 10), Vector(11, 12, 13)))))
+
+  }
+
+  "Matrix :-" should "subtract element to each cell of matrix" in {
+
+    // given
+
+    val matrix: Matrix[Int] = Matrix.vectorToMatrix(Vector(Vector(1, 2, 3), Vector(2, 3, 4), Vector(5, 6, 7)))
+
+    // when
+
+    val computeMatrix: Matrix[Int] = matrix :- 6
+
+    // then
+
+    assert(computeMatrix.equals(Matrix.vectorToMatrix(Vector(Vector(-5, -4, -3), Vector(-4, -3, -2), Vector(-1, 0, 1)))))
+
+  }
+
+  "Matrix :*" should "multiply element to each cell of matrix" in {
+
+    // given
+
+    val matrix: Matrix[Int] = Matrix.vectorToMatrix(Vector(Vector(1, 2, 3), Vector(2, 3, 4), Vector(5, 6, 7)))
+
+    // when
+
+    val computeMatrix: Matrix[Int] = matrix :* 6
+
+    // then
+
+    assert(computeMatrix.equals(Matrix.vectorToMatrix(Vector(Vector(6, 12, 18), Vector(12, 18, 24), Vector(30, 36, 42)))))
+
+  }
+
+  "Matrix :/" should "divide element to each cell of matrix" in {
+
+    // given
+
+    val matrix: Matrix[Int] = Matrix.vectorToMatrix(Vector(Vector(1, 2, 3), Vector(2, 3, 4), Vector(5, 6, 7)))
+
+    // when
+
+    val computeMatrix: Matrix[Double] = matrix :/ 6.0
+
+    // then
+
+    for(i <- matrix.get.indices) {
+      for(j <- matrix.get(i).indices) {
+        assert((computeMatrix.get(i)(j) - matrix.get(i)(j) / 6.0) *  (computeMatrix.get(i)(j) - matrix.get(i)(j) / 6.0) < 0.000001)
+      }
+    }
+
+  }
+
+  "Matrix :^" should "pow element to each cell of matrix" in {
+
+    // given
+
+    val matrix: Matrix[Int] = Matrix.vectorToMatrix(Vector(Vector(1, 2, 3), Vector(5, 6, 7)))
+
+    // when
+
+    val computeMatrix: Matrix[Double] = matrix :^ 3.0
+
+    // then
+
+    for(i <- matrix.get.indices) {
+      for(j <- matrix.get(i).indices) {
+        assert((computeMatrix.get(i)(j) - scala.math.pow(matrix.get(i)(j), 3.0)) *  (computeMatrix.get(i)(j) - scala.math.pow(matrix.get(i)(j), 3.0)) < 0.000001)
+      }
+    }
+
+  }
 
   "Matrix.equals" should "return true when matrices are equals" in {
 
@@ -430,10 +502,6 @@ class MatrixTest extends AnyFlatSpec {
     assert(cloneMatrix.equals(matrix))
 
   }
-
-  /**
-   * Ops
-   */
 
   "Matrix.vectorToMatrix" should "return matrix with vector" in {
 

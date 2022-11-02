@@ -1,5 +1,7 @@
 package com.victormeyer.scalaml.data
 
+import scala.math.Numeric.Implicits.infixNumericOps
+
 /** Matrix 2D compose with Vectors.
  * Both of row and column operations are available, but it's optimize on row operations.
  * Type of this Matrix is generic, but for many methods, Numeric types are mandatory.
@@ -109,6 +111,61 @@ class Matrix[T](rows: Int, cols: Int, initValue: T=null.asInstanceOf[T]) {
     }
     val matrixTranspose: Vector[Vector[T]] = matrix.transpose
     matrix = matrixTranspose.filter(row => matrixTranspose.indexOf(row) != index).transpose
+  }
+
+  /** Add element to each cell of matrix
+   *
+   * @param value Element to add
+   * @param numeric Numeric instance
+   * @return New matrix with incrementing cells
+   */
+  def :+(value: T)(implicit numeric: Numeric[T]): Matrix[T] ={
+    val outputVector: Vector[Vector[T]] = matrix.map(row => row.map(col => col + value))
+    Matrix.vectorToMatrix(outputVector)
+  }
+
+  /** Subtract element to each cell of matrix
+   *
+   * @param value Element to subtract
+   * @param numeric Numeric instance
+   * @return New matrix with subtracting cells
+   */
+  def :-(value: T)(implicit numeric: Numeric[T]): Matrix[T] ={
+    val outputVector: Vector[Vector[T]] = matrix.map(row => row.map(col => col - value))
+    Matrix.vectorToMatrix(outputVector)
+  }
+
+  /** Multiply element to each cell of matrix
+   *
+   * @param value Element to multiply
+   * @param numeric Numeric instance
+   * @return New matrix with multiplying cells
+   */
+  def :*(value: T)(implicit numeric: Numeric[T]): Matrix[T] ={
+    val outputVector: Vector[Vector[T]] = matrix.map(row => row.map(col => col * value))
+    Matrix.vectorToMatrix(outputVector)
+  }
+
+  /** Divide element to each cell of matrix
+   *
+   * @param value Element to divide
+   * @param numeric Numeric instance
+   * @return New matrix with dividing cells
+   */
+  def :/(value: Double)(implicit numeric: Numeric[T]): Matrix[Double] ={
+    val outputVector: Vector[Vector[Double]] = matrix.map(row => row.map(col => col.toDouble / value))
+    Matrix.vectorToMatrix(outputVector)
+  }
+
+  /** Pow element to each cell of matrix
+   *
+   * @param value Element to pow
+   * @param numeric Numeric instance
+   * @return New matrix with powered cells
+   */
+  def :^(value: Double)(implicit numeric: Numeric[T]): Matrix[Double] ={
+    val outputVector: Vector[Vector[Double]] = matrix.map(row => row.map(col => scala.math.pow(col.toDouble, value)))
+    Matrix.vectorToMatrix(outputVector)
   }
 
   override def toString: String ={
