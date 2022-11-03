@@ -119,7 +119,7 @@ class Matrix[T](rows: Int, cols: Int, initValue: T=null.asInstanceOf[T]) {
    * @param numeric Numeric instance
    * @return New matrix with incrementing cells
    */
-  def :+(value: T)(implicit numeric: Numeric[T]): Matrix[T] ={
+  def +(value: T)(implicit numeric: Numeric[T]): Matrix[T] ={
     val outputVector: Vector[Vector[T]] = matrix.map(row => row.map(col => col + value))
     Matrix.vectorToMatrix(outputVector)
   }
@@ -130,7 +130,7 @@ class Matrix[T](rows: Int, cols: Int, initValue: T=null.asInstanceOf[T]) {
    * @param numeric Numeric instance
    * @return New matrix with subtracting cells
    */
-  def :-(value: T)(implicit numeric: Numeric[T]): Matrix[T] ={
+  def -(value: T)(implicit numeric: Numeric[T]): Matrix[T] ={
     val outputVector: Vector[Vector[T]] = matrix.map(row => row.map(col => col - value))
     Matrix.vectorToMatrix(outputVector)
   }
@@ -141,7 +141,7 @@ class Matrix[T](rows: Int, cols: Int, initValue: T=null.asInstanceOf[T]) {
    * @param numeric Numeric instance
    * @return New matrix with multiplying cells
    */
-  def :*(value: T)(implicit numeric: Numeric[T]): Matrix[T] ={
+  def *(value: T)(implicit numeric: Numeric[T]): Matrix[T] ={
     val outputVector: Vector[Vector[T]] = matrix.map(row => row.map(col => col * value))
     Matrix.vectorToMatrix(outputVector)
   }
@@ -152,7 +152,7 @@ class Matrix[T](rows: Int, cols: Int, initValue: T=null.asInstanceOf[T]) {
    * @param numeric Numeric instance
    * @return New matrix with dividing cells
    */
-  def :/(value: Double)(implicit numeric: Numeric[T]): Matrix[Double] ={
+  def /(value: Double)(implicit numeric: Numeric[T]): Matrix[Double] ={
     val outputVector: Vector[Vector[Double]] = matrix.map(row => row.map(col => col.toDouble / value))
     Matrix.vectorToMatrix(outputVector)
   }
@@ -163,7 +163,7 @@ class Matrix[T](rows: Int, cols: Int, initValue: T=null.asInstanceOf[T]) {
    * @param numeric Numeric instance
    * @return New matrix with powered cells
    */
-  def :^(value: Double)(implicit numeric: Numeric[T]): Matrix[Double] ={
+  def ^(value: Double)(implicit numeric: Numeric[T]): Matrix[Double] ={
     val outputVector: Vector[Vector[Double]] = matrix.map(row => row.map(col => scala.math.pow(col.toDouble, value)))
     Matrix.vectorToMatrix(outputVector)
   }

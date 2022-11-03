@@ -321,7 +321,7 @@ class MatrixTest extends AnyFlatSpec {
 
   }
 
-  "Matrix :+" should "add element to each cell of matrix" in {
+  "Matrix +" should "add element to each cell of matrix" in {
 
     // given
 
@@ -329,7 +329,7 @@ class MatrixTest extends AnyFlatSpec {
 
     // when
 
-    val computeMatrix: Matrix[Int] = matrix :+ 6
+    val computeMatrix: Matrix[Int] = matrix + 6
 
     // then
 
@@ -337,7 +337,7 @@ class MatrixTest extends AnyFlatSpec {
 
   }
 
-  "Matrix :-" should "subtract element to each cell of matrix" in {
+  "Matrix -" should "subtract element to each cell of matrix" in {
 
     // given
 
@@ -345,7 +345,7 @@ class MatrixTest extends AnyFlatSpec {
 
     // when
 
-    val computeMatrix: Matrix[Int] = matrix :- 6
+    val computeMatrix: Matrix[Int] = matrix - 6
 
     // then
 
@@ -353,7 +353,7 @@ class MatrixTest extends AnyFlatSpec {
 
   }
 
-  "Matrix :*" should "multiply element to each cell of matrix" in {
+  "Matrix *" should "multiply element to each cell of matrix" in {
 
     // given
 
@@ -361,7 +361,7 @@ class MatrixTest extends AnyFlatSpec {
 
     // when
 
-    val computeMatrix: Matrix[Int] = matrix :* 6
+    val computeMatrix: Matrix[Int] = matrix * 6
 
     // then
 
@@ -369,7 +369,7 @@ class MatrixTest extends AnyFlatSpec {
 
   }
 
-  "Matrix :/" should "divide element to each cell of matrix" in {
+  "Matrix /" should "divide element to each cell of matrix" in {
 
     // given
 
@@ -377,7 +377,7 @@ class MatrixTest extends AnyFlatSpec {
 
     // when
 
-    val computeMatrix: Matrix[Double] = matrix :/ 6.0
+    val computeMatrix: Matrix[Double] = matrix / 6.0
 
     // then
 
@@ -389,7 +389,7 @@ class MatrixTest extends AnyFlatSpec {
 
   }
 
-  "Matrix :^" should "pow element to each cell of matrix" in {
+  "Matrix ^" should "pow element to each cell of matrix" in {
 
     // given
 
@@ -397,7 +397,7 @@ class MatrixTest extends AnyFlatSpec {
 
     // when
 
-    val computeMatrix: Matrix[Double] = matrix :^ 3.0
+    val computeMatrix: Matrix[Double] = matrix ^ 3.0
 
     // then
 
