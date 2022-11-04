@@ -245,7 +245,7 @@ class MatrixTest extends AnyFlatSpec {
 
   }
 
-  "Matrix.dropRow" should "raise exception with invalid index" in {
+  "Matrix.deleteRows" should "raise exception with invalid indexes" in {
 
     // given
 
@@ -255,27 +255,26 @@ class MatrixTest extends AnyFlatSpec {
     // when
 
     try {
-      matrix.dropRow(5)
+      matrix.delete(Seq(5, 8))
     } catch {
       case e: IllegalArgumentException => errorMessage = e.getMessage
     }
 
     // then
 
-    assert(errorMessage == "Invalid row index: 5 >= 3")
+    assert(errorMessage == "Invalid row indexes: (5, 8) >= 3")
 
   }
 
-  it should "drop row in matrix" in {
+  it should "delete rows in matrix" in {
 
     // given
 
-    val matrix: Matrix[Int] = new Matrix(3, 3, 5)
-    matrix.set(Vector(Vector(1, 2, 3), Vector(2, 3, 4), Vector(5, 6, 7)))
+    val matrix: Matrix[Int] = Matrix.vectorToMatrix(Vector(Vector(1, 2, 3), Vector(2, 3, 4), Vector(5, 6, 7), Vector(5, 6, 7)))
 
     // when
 
-    matrix.dropRow(1)
+    matrix.delete(Seq(1, 3))
 
     // then
 
@@ -283,7 +282,7 @@ class MatrixTest extends AnyFlatSpec {
 
   }
 
-  "Matrix.dropColumn" should "raise exception with invalid index" in {
+  "Matrix.deleteColumns" should "raise exception with invalid index" in {
 
     // given
 
@@ -293,31 +292,51 @@ class MatrixTest extends AnyFlatSpec {
     // when
 
     try {
-      matrix.dropColumn(5)
+      matrix.delete(Seq(5, 7, 1), 'C')
     } catch {
       case e: IllegalArgumentException => errorMessage = e.getMessage
     }
 
     // then
 
-    assert(errorMessage == "Invalid column index: 5 >= 2")
+    assert(errorMessage == "Invalid column indexes: (5, 7) >= 2")
 
   }
 
-  it should "drop column in matrix" in {
+  it should "delete column in matrix" in {
 
     // given
 
-    val matrix: Matrix[Int] = new Matrix(3, 3, 5)
-    matrix.set(Vector(Vector(1, 2, 3), Vector(2, 3, 4), Vector(5, 6, 7)))
+    val matrix: Matrix[Int] = Matrix.vectorToMatrix(Vector(Vector(1, 2, 3, 1), Vector(2, 3, 4, 2), Vector(5, 6, 7, 5)))
 
     // when
 
-    matrix.dropColumn(1)
+    matrix.delete(Seq(1, 3), 'C')
 
     // then
 
     assert(matrix.get.equals(Vector(Vector(1, 3), Vector(2, 4), Vector(5, 7))))
+
+  }
+
+  "Matrix.delete" should "raise exception when axis is unknown" in {
+
+    // given
+
+    val matrix: Matrix[Int] = Matrix.vectorToMatrix(Vector())
+    var errorMessage: String = ""
+
+    // when
+
+    try {
+      matrix.delete(Seq(2), 'U')
+    } catch {
+      case e: IllegalArgumentException => errorMessage = e.getMessage
+    }
+
+    // then
+
+    assert(errorMessage == "Invalid axis 'U'. 'R' => row, 'C' => column")
 
   }
 

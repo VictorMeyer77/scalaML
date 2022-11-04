@@ -90,27 +90,39 @@ class Matrix[T](rows: Int, cols: Int, initValue: T=null.asInstanceOf[T]) {
     matrix = (matrix.transpose updated (index, column)).transpose
   }
 
+  /** Remove rows or columns from the matrix
+   *
+   * @param indexes Indexes of rows or columns
+   * @param axis Type of suppression. 'R' for row, 'C' for column
+   */
+  def delete(indexes: Seq[Int], axis: Char='R'): Unit ={
+    axis.toUpper match {
+      case 'R' => deleteRows(indexes)
+      case 'C' => deleteColumns(indexes)
+      case _ => throw new IllegalArgumentException(s"Invalid axis '$axis'. 'R' => row, 'C' => column")
+    }
+  }
+
   /** Delete specific row
    *
-   * @param index Row index
+   * @param indexes Row indexes
    */
-  def dropRow(index: Int): Unit ={
-    if(index >= shape._1){
-      throw new IllegalArgumentException(s"Invalid row index: $index >= ${shape._1}")
+  private def deleteRows(indexes: Seq[Int]): Unit ={
+    if(indexes.exists(index => index >= shape._1)){
+      throw new IllegalArgumentException(s"Invalid row indexes: (${indexes.filter(index => index >= shape._1).mkString(", ")}) >= ${shape._1}")
     }
-    matrix = matrix.filter(row => matrix.indexOf(row) != index)
+    matrix = matrix.zipWithIndex.filter(row => !indexes.contains(row._2)).map(row => row._1)
   }
 
   /** Delete specific column
    *
-   * @param index Column Index
+   * @param indexes Column Indexes
    */
-  def dropColumn(index: Int): Unit ={
-    if(index >= shape._2){
-      throw new IllegalArgumentException(s"Invalid column index: $index >= ${shape._2}")
+  private def deleteColumns(indexes: Seq[Int]): Unit ={
+    if(indexes.exists(index => index >= shape._2)){
+      throw new IllegalArgumentException(s"Invalid column indexes: (${indexes.filter(index => index >= shape._2).mkString(", ")}) >= ${shape._2}")
     }
-    val matrixTranspose: Vector[Vector[T]] = matrix.transpose
-    matrix = matrixTranspose.filter(row => matrixTranspose.indexOf(row) != index).transpose
+    matrix = matrix.transpose.zipWithIndex.filter(row => !indexes.contains(row._2)).map(row => row._1).transpose
   }
 
   /** Add element to each cell of matrix
