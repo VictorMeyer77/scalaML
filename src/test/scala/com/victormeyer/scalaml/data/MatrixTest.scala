@@ -763,6 +763,27 @@ class MatrixTest extends AnyFlatSpec {
 
   }
 
+  "Matrix.sum" should "raise exception when axis is unknown" in {
+
+    // given
+
+    val matrix: Matrix[Int] = Matrix.vectorToMatrix(Vector())
+    var errorMessage: String = ""
+
+    // when
+
+    try {
+      Matrix.sum(matrix, 'T')
+    } catch {
+      case e: IllegalArgumentException => errorMessage = e.getMessage
+    }
+
+    // then
+
+    assert(errorMessage == "Invalid axis 'T'. 'A' => all, 'R' => row, 'C' => column")
+
+  }
+
   "Matrix.sumRow" should "return matrix of row sum" in {
 
     // given
@@ -772,7 +793,7 @@ class MatrixTest extends AnyFlatSpec {
 
     // when
 
-    val sumMatrix: Matrix[Int] = Matrix.sumRow(matrix)
+    val sumMatrix: Matrix[Int] = Matrix.sum(matrix, 'R')
 
     // then
 
@@ -789,11 +810,173 @@ class MatrixTest extends AnyFlatSpec {
 
     // when
 
-    val sumMatrix: Matrix[Int] = Matrix.sumColumn(matrix)
+    val sumMatrix: Matrix[Int] = Matrix.sum(matrix, 'C')
 
     // then
 
     assert(sumMatrix.get.equals(Vector(Vector(15, 18, 21, 24))))
+
+  }
+
+  "Matrix.sumMatrix" should "return sum off all cells in another matrix" in {
+
+    // given
+
+    val matrix: Matrix[Int] = Matrix.vectorToMatrix(Vector(Vector(1, 2, 3, 4), Vector(5, 6, 7, 8), Vector(9, 10, 11, 12)))
+
+    // when
+
+    val sumMatrix: Matrix[Int] = Matrix.sum(matrix)
+
+    // then
+
+    assert(sumMatrix.get.equals(Vector(Vector(78))))
+
+  }
+
+  "Matrix.avgRow" should "return matrix of row average" in {
+
+    // given
+
+    val matrix: Matrix[Int] = Matrix.vectorToMatrix(Vector(Vector(1, 2, 3, 4), Vector(5, 6, 7, 8), Vector(9, 10, 11, 12)))
+
+    // when
+
+    val computeMatrix: Matrix[Double] = Matrix.avg(matrix, 'R')
+
+    // then
+
+    for(i <- computeMatrix.get.indices){
+      assert(scala.math.pow(computeMatrix.get(i)(0) - matrix.get(i).sum / matrix.get(i).length.toDouble, 2) < 0.00001)
+    }
+
+  }
+
+  it should "raise exception when matrix hasn't columns" in {
+
+    // given
+
+    val matrix: Matrix[Int] = Matrix.vectorToMatrix(Vector(Vector(), Vector(), Vector()))
+    var errorMessage: String = ""
+
+    // when
+
+    try {
+      Matrix.avg(matrix, 'R')
+    } catch {
+      case e: IllegalArgumentException => errorMessage = e.getMessage
+    }
+
+    // then
+
+    assert(errorMessage == "Invalid matrix: no columns")
+
+  }
+
+  "Matrix.avgColumn" should "return matrix of column average" in {
+
+    // given
+
+    val matrix: Matrix[Int] = Matrix.vectorToMatrix(Vector(Vector(1, 2, 3, 4), Vector(5, 6, 7, 8), Vector(9, 10, 11, 12)))
+    val transposeVectors: Vector[Vector[Int]] = matrix.get.transpose
+
+    // when
+
+    val computeMatrix: Matrix[Double] = Matrix.avg(matrix, 'C')
+
+    // then
+
+    for(i <- computeMatrix.get(0).indices){
+      assert(scala.math.pow(computeMatrix.get(0)(i) - transposeVectors(i).sum / transposeVectors(i).length.toDouble, 2) < 0.00001)
+    }
+
+  }
+
+  it should "raise exception when matrix hasn't rows" in {
+
+    // given
+
+    val matrix: Matrix[Int] = Matrix.vectorToMatrix(Vector())
+    var errorMessage: String = ""
+
+    // when
+
+    try {
+      Matrix.avg(matrix, 'C')
+    } catch {
+      case e: IllegalArgumentException => errorMessage = e.getMessage
+    }
+
+    // then
+
+    assert(errorMessage == "Invalid matrix: no rows")
+
+  }
+
+  "Matrix.avgMatrix" should "return average of all cells in another matrix" in {
+
+    // given
+
+    val matrix: Matrix[Int] = Matrix.vectorToMatrix(Vector(Vector(1, 2, 3, 4), Vector(5, 6, 7, 8), Vector(9, 10, 11, 12)))
+
+    // when
+
+    val computeMatrix: Matrix[Double] = Matrix.avg(matrix)
+
+    // then
+
+    assert(scala.math.pow(computeMatrix.get(0)(0) - 78.0 / 12.0, 2) < 0.00001)
+
+  }
+
+  it should "raise exception when matrix is empty" in {
+
+    // given
+
+    val matrixA: Matrix[Int] = Matrix.vectorToMatrix(Vector())
+    val matrixB: Matrix[Int] = Matrix.vectorToMatrix(Vector(Vector()))
+    var errorMessageA: String = ""
+    var errorMessageB: String = ""
+
+    // when
+
+    try {
+      Matrix.avg(matrixA)
+    } catch {
+      case e: IllegalArgumentException => errorMessageA = e.getMessage
+    }
+
+    try {
+      Matrix.avg(matrixB)
+    } catch {
+      case e: IllegalArgumentException => errorMessageB = e.getMessage
+    }
+
+    // then
+
+    assert(errorMessageA == "Matrix is empty")
+    assert(errorMessageB == "Matrix is empty")
+
+  }
+
+  "Matrix.avg" should "raise exception when axis is unknown" in {
+
+    // given
+
+    val matrix: Matrix[Int] = Matrix.vectorToMatrix(Vector())
+    var errorMessage: String = ""
+
+    // when
+
+    try {
+      Matrix.avg(matrix, 'T')
+    } catch {
+      case e: IllegalArgumentException => errorMessage = e.getMessage
+    }
+
+    // then
+
+    assert(errorMessage == "Invalid axis 'T'. 'A' => all, 'R' => row, 'C' => column")
 
   }
 

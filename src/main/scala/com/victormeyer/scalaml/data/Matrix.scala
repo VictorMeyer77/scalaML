@@ -358,28 +358,115 @@ object Matrix {
     vectorToMatrix(selectVector)
   }
 
-  /** Return sum of each matrix rows
+  /** Compute sum of a matrix
+   *
+   * @param matrix Matrix to compute sum
+   * @param axis Type of sum: 'A' for all cells, 'R' for rows, 'C' for columns
+   * @param numeric Numeric instance
+   * @tparam T Type of matrix
+   * @return Matrix of sums
+   */
+  def sum[T](matrix: Matrix[T], axis: Char='A')(implicit numeric: Numeric[T]): Matrix[T] ={
+    axis.toUpper match {
+      case 'A' => sumMatrix(matrix)
+      case 'R' => sumRow(matrix)
+      case 'C' => sumColumn(matrix)
+      case _ => throw new IllegalArgumentException(s"Invalid axis '$axis'. 'A' => all, 'R' => row, 'C' => column")
+    }
+  }
+
+  /** Return sum of each rows
    *
    * @param matrix Matrix to calculate sums
    * @param numeric Numeric instance
    * @tparam T Type of matrix
    * @return Matrix of sums
    */
-  def sumRow[T](matrix: Matrix[T])(implicit numeric: Numeric[T]): Matrix[T] ={
+  private def sumRow[T](matrix: Matrix[T])(implicit numeric: Numeric[T]): Matrix[T] ={
     val vectorSum: Vector[Vector[T]] = matrix.get.map(vector => Vector(vector.sum))
     vectorToMatrix(vectorSum)
   }
 
-  /** Return sum of each matrix columns
+  /** Return sum of each columns
    *
    * @param matrix Matrix to calculate sums
    * @param numeric Numeric instance
    * @tparam T Type of matrix
    * @return Matrix of sums
    */
-  def sumColumn[T](matrix: Matrix[T])(implicit numeric: Numeric[T]): Matrix[T] ={
+  private def sumColumn[T](matrix: Matrix[T])(implicit numeric: Numeric[T]): Matrix[T] ={
     val vectorSum: Vector[Vector[T]] = Vector(matrix.get.transpose.map(_.sum))
     vectorToMatrix(vectorSum)
+  }
+
+  /** Return sum of each cells
+   *
+   * @param matrix Matrix to calculate sums
+   * @param numeric Numeric instance
+   * @tparam T Type of matrix
+   * @return Matrix of sum
+   */
+  private def sumMatrix[T](matrix: Matrix[T])(implicit numeric: Numeric[T]): Matrix[T] ={
+    vectorToMatrix(Vector(Vector(matrix.get.map(row => row.sum).sum)))
+  }
+
+  /** Compute average of a matrix
+   *
+   * @param matrix Matrix to compute average
+   * @param axis Type of average: 'A' for all cells, 'R' for rows, 'C' for columns
+   * @param numeric Numeric instance
+   * @tparam T Type of matrix
+   * @return Matrix of averages
+   */
+  def avg[T](matrix: Matrix[T], axis: Char='A')(implicit numeric: Numeric[T]): Matrix[Double] ={
+    axis.toUpper match {
+      case 'A' => avgMatrix(matrix)
+      case 'R' => avgRow(matrix)
+      case 'C' => avgColumn(matrix)
+      case _ => throw new IllegalArgumentException(s"Invalid axis '$axis'. 'A' => all, 'R' => row, 'C' => column")
+    }
+  }
+
+  /** Compute average of each rows
+   *
+   * @param matrix Matrix to compute average
+   * @param numeric Numeric instance
+   * @tparam T Type of matrix
+   * @return Matrix of averages
+   */
+  private def avgRow[T](matrix: Matrix[T])(implicit numeric: Numeric[T]): Matrix[Double] ={
+    if(matrix.shape._2 == 0){
+      throw new IllegalArgumentException("Invalid matrix: no columns")
+    }
+    sumRow(matrix) / matrix.shape._2
+  }
+
+  /** Compute average of each columns
+   *
+   * @param matrix Matrix to compute average
+   * @param numeric Numeric instance
+   * @tparam T Type of matrix
+   * @return Matrix of averages
+   */
+  private def avgColumn[T](matrix: Matrix[T])(implicit numeric: Numeric[T]): Matrix[Double] ={
+    if(matrix.shape._1 == 0){
+      throw new IllegalArgumentException("Invalid matrix: no rows")
+    }
+    sumColumn(matrix) / matrix.shape._1
+  }
+
+  /** Compute average of each cells
+   *
+   * @param matrix Matrix to compute average
+   * @param numeric Numeric instance
+   * @tparam T Type of matrix
+   * @return Matrix of average
+   */
+  private def avgMatrix[T](matrix: Matrix[T])(implicit numeric: Numeric[T]): Matrix[Double] ={
+    if(matrix.shape._1 == 0 || matrix.shape._2 == 0){
+      throw new IllegalArgumentException("Matrix is empty")
+    }
+    sumMatrix(matrix) / (matrix.shape._1 * matrix.shape._2)
   }
 
 }
