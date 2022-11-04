@@ -40,7 +40,7 @@ class Matrix[T](rows: Int, cols: Int, initValue: T=null.asInstanceOf[T]) {
    *
    * @param matrix New vector of vectors
    */
-  def set(matrix: Vector[Vector[T]]): Unit ={
+  def replaceMatrix(matrix: Vector[Vector[T]]): Unit ={
     if(matrix.map(row => row.length).distinct.length > 1){
       throw new IllegalArgumentException(s"Invalid shape: different sizes of vectors found (${matrix.map(row => row.length).distinct.mkString(", ")})")
     }
@@ -53,7 +53,7 @@ class Matrix[T](rows: Int, cols: Int, initValue: T=null.asInstanceOf[T]) {
    * @param col Column index
    * @param value New value
    */
-  def setValue(row: Int, col: Int, value: T): Unit ={
+  def replaceCell(row: Int, col: Int, value: T): Unit ={
     if(row >= shape._1){
       throw new IllegalArgumentException(s"Invalid row index: $row >= ${shape._1}")
     } else if(col >= shape._2){
@@ -62,12 +62,26 @@ class Matrix[T](rows: Int, cols: Int, initValue: T=null.asInstanceOf[T]) {
     matrix = matrix updated (row, matrix(row) updated (col, value))
   }
 
+  /** Replace specific row or column
+   *
+   * @param index Index of row or column
+   * @param vector New row or column
+   * @param axis Type of replacement. 'R' for row, 'C' for column
+   */
+  def replace(index: Int, vector: Vector[T], axis: Char='R'): Unit ={
+    axis.toUpper match {
+      case 'R' => replaceRow(index, vector)
+      case 'C' => replaceColumn(index, vector)
+      case _ => throw new IllegalArgumentException(s"Invalid axis '$axis'. 'R' => row, 'C' => column")
+    }
+  }
+
   /** Replace entire row
    *
    * @param index Row index
    * @param row New row
    */
-  def setRow(index: Int, row: Vector[T]): Unit ={
+  private def replaceRow(index: Int, row: Vector[T]): Unit ={
     if(row.length != shape._2){
       throw new IllegalArgumentException(s"Invalid row size: ${row.length} != ${shape._2}")
     } else if(index >= shape._1){
@@ -81,7 +95,7 @@ class Matrix[T](rows: Int, cols: Int, initValue: T=null.asInstanceOf[T]) {
    * @param index Column index
    * @param column New column
    */
-  def setColumn(index: Int, column: Vector[T]): Unit ={
+  private def replaceColumn(index: Int, column: Vector[T]): Unit ={
     if(column.length != shape._1){
       throw new IllegalArgumentException(s"Invalid column size: ${column.length} != ${shape._1}")
     } else if(index >= shape._2){
@@ -298,7 +312,7 @@ class Matrix[T](rows: Int, cols: Int, initValue: T=null.asInstanceOf[T]) {
 
   override def clone: Matrix[T] ={
     val matrix: Matrix[T] = new Matrix[T](rows, cols, initValue)
-    matrix.set(get)
+    matrix.replaceMatrix(get)
     matrix
   }
 
@@ -318,7 +332,7 @@ object Matrix {
    */
   def vectorToMatrix[T](vector: Vector[Vector[T]]): Matrix[T] ={
     val newMatrix: Matrix[T] = new Matrix(0, 0)
-    newMatrix.set(vector)
+    newMatrix.replaceMatrix(vector)
     newMatrix
   }
 

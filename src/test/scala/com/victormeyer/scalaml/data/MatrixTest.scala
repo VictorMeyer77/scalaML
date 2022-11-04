@@ -58,8 +58,7 @@ class MatrixTest extends AnyFlatSpec {
     // given
 
     val stream: ByteArrayOutputStream = new java.io.ByteArrayOutputStream()
-    val matrix: Matrix[Int] = new Matrix(3, 5, 5)
-    matrix.set(Vector(Vector(1, 2, 3, 4, 5), Vector(6, 7, 8, 9, 10), Vector(11, 12, 13, 14, 15)))
+    val matrix: Matrix[Int] = Matrix.vectorToMatrix(Vector(Vector(1, 2, 3, 4, 5), Vector(6, 7, 8, 9, 10), Vector(11, 12, 13, 14, 15)))
 
     // when
 
@@ -73,7 +72,7 @@ class MatrixTest extends AnyFlatSpec {
 
   }
 
-  "Matrix.set" should "change matrix" in {
+  "Matrix.replaceMatrix" should "change matrix" in {
 
     // given
 
@@ -81,7 +80,7 @@ class MatrixTest extends AnyFlatSpec {
 
     // when
 
-    matrix.set(Vector(Vector(1, 2, 3, 4, 5), Vector(6, 7, 8, 9, 10), Vector(11, 12, 13, 14, 15)))
+    matrix.replaceMatrix(Vector(Vector(1, 2, 3, 4, 5), Vector(6, 7, 8, 9, 10), Vector(11, 12, 13, 14, 15)))
 
     // then
 
@@ -99,7 +98,7 @@ class MatrixTest extends AnyFlatSpec {
     // when
 
     try {
-      matrix.set(Vector(Vector(1, 2), Vector(1)))
+      matrix.replaceMatrix(Vector(Vector(1, 2), Vector(1)))
     } catch {
       case e: IllegalArgumentException => errorMessage = e.getMessage
     }
@@ -110,7 +109,7 @@ class MatrixTest extends AnyFlatSpec {
 
   }
 
-  "Matrix.setValue" should "raise exception with invalid index" in {
+  "Matrix.replaceCell" should "raise exception with invalid index" in {
 
     // given
 
@@ -121,13 +120,13 @@ class MatrixTest extends AnyFlatSpec {
     // when
 
     try {
-      matrix.setValue(3, 2, 15)
+      matrix.replaceCell(3, 2, 15)
     } catch {
       case e: IllegalArgumentException => errorMessageA = e.getMessage
     }
 
     try {
-      matrix.setValue(2, 8, 15)
+      matrix.replaceCell(2, 8, 15)
     } catch {
       case e: IllegalArgumentException => errorMessageB = e.getMessage
     }
@@ -147,7 +146,7 @@ class MatrixTest extends AnyFlatSpec {
 
     // when
 
-    matrix.setValue(1, 2, 15)
+    matrix.replaceCell(1, 2, 15)
 
     // then
 
@@ -155,7 +154,7 @@ class MatrixTest extends AnyFlatSpec {
 
   }
 
-  "Matrix.setRow" should "raise exception with invalid index" in {
+  "Matrix.replaceRow" should "raise exception with invalid index" in {
 
     // given
 
@@ -166,13 +165,13 @@ class MatrixTest extends AnyFlatSpec {
     // when
 
     try {
-      matrix.setRow(3, Vector(1, 2))
+      matrix.replace(3, Vector(1, 2))
     } catch {
       case e: IllegalArgumentException => errorMessageA = e.getMessage
     }
 
     try {
-      matrix.setRow(3, Vector(1))
+      matrix.replace(3, Vector(1))
     } catch {
       case e: IllegalArgumentException => errorMessageB = e.getMessage
     }
@@ -192,7 +191,7 @@ class MatrixTest extends AnyFlatSpec {
 
     // when
 
-    matrix.setRow(1, Vector(2, 21, 32))
+    matrix.replace(1, Vector(2, 21, 32))
 
     // then
 
@@ -200,7 +199,7 @@ class MatrixTest extends AnyFlatSpec {
 
   }
 
-  "Matrix.setColumn" should "raise exception with invalid index" in {
+  "Matrix.replaceColumn" should "raise exception with invalid index" in {
 
     // given
 
@@ -211,13 +210,13 @@ class MatrixTest extends AnyFlatSpec {
     // when
 
     try {
-      matrix.setColumn(3, Vector(1, 2, 3))
+      matrix.replace(3, Vector(1, 2, 3), 'C')
     } catch {
       case e: IllegalArgumentException => errorMessageA = e.getMessage
     }
 
     try {
-      matrix.setColumn(3, Vector(1))
+      matrix.replace(3, Vector(1), 'C')
     } catch {
       case e: IllegalArgumentException => errorMessageB = e.getMessage
     }
@@ -237,11 +236,32 @@ class MatrixTest extends AnyFlatSpec {
 
     // when
 
-    matrix.setColumn(1, Vector(2, 21, 32))
+    matrix.replace(1, Vector(2, 21, 32), 'C')
 
     // then
 
     assert(matrix.get.equals(Vector(Vector(5, 2, 5), Vector(5, 21, 5), Vector(5, 32, 5))))
+
+  }
+
+  "Matrix.replace" should "raise exception when axis is unknown" in {
+
+    // given
+
+    val matrix: Matrix[Int] = Matrix.vectorToMatrix(Vector())
+    var errorMessage: String = ""
+
+    // when
+
+    try {
+      matrix.replace(2, Vector(1, 2), 'U')
+    } catch {
+      case e: IllegalArgumentException => errorMessage = e.getMessage
+    }
+
+    // then
+
+    assert(errorMessage == "Invalid axis 'U'. 'R' => row, 'C' => column")
 
   }
 
@@ -634,8 +654,7 @@ class MatrixTest extends AnyFlatSpec {
     // given
 
     val matrixA: Matrix[Int] = new Matrix(5416, 9817, 50)
-    val matrixB: Matrix[Int] = new Matrix(3, 5, 5)
-    matrixB.set(Vector(Vector(1, 2, 3, 4, 5), Vector(6, 7, 8, 9, 10), Vector(11, 12, 13, 14, 15)))
+    val matrixB: Matrix[Int] = Matrix.vectorToMatrix(Vector(Vector(1, 2, 3, 4, 5), Vector(6, 7, 8, 9, 10), Vector(11, 12, 13, 14, 15)))
     val matrixC: Matrix[Int] = new Matrix(0, 0, 0)
     val matrixD: Matrix[Float] = new Matrix(2, 2)
 
@@ -678,7 +697,7 @@ class MatrixTest extends AnyFlatSpec {
 
     val vector: Vector[Vector[String]] = Vector(Vector("apple", "banana"), Vector("butter", "sugar"))
     val targetMatrix: Matrix[String] = new Matrix(0, 0)
-    targetMatrix.set(vector)
+    targetMatrix.replaceMatrix(vector)
 
     // when
 
@@ -715,8 +734,7 @@ class MatrixTest extends AnyFlatSpec {
 
     // given
 
-    val matrixA: Matrix[Int] = new Matrix(3, 4)
-    matrixA.set(Vector(Vector(1, 2, 3, 4), Vector(5, 6, 7, 8), Vector(9, 10, 11, 12)))
+    val matrixA: Matrix[Int] = Matrix.vectorToMatrix(Vector(Vector(1, 2, 3, 4), Vector(5, 6, 7, 8), Vector(9, 10, 11, 12)))
 
     // when
 
@@ -765,8 +783,7 @@ class MatrixTest extends AnyFlatSpec {
 
     // given
 
-    val matrix: Matrix[Int] = new Matrix(3, 4, 0)
-    matrix.set(Vector(Vector(1, 2, 3, 4), Vector(5, 6, 7, 8), Vector(9, 10, 11, 12)))
+    val matrix: Matrix[Int] = Matrix.vectorToMatrix(Vector(Vector(1, 2, 3, 4), Vector(5, 6, 7, 8), Vector(9, 10, 11, 12)))
 
     // when
 
@@ -807,8 +824,7 @@ class MatrixTest extends AnyFlatSpec {
 
     // given
 
-    val matrix: Matrix[Int] = new Matrix(3, 4)
-    matrix.set(Vector(Vector(1, 2, 3, 4), Vector(5, 6, 7, 8), Vector(9, 10, 11, 12)))
+    val matrix: Matrix[Int] = Matrix.vectorToMatrix(Vector(Vector(1, 2, 3, 4), Vector(5, 6, 7, 8), Vector(9, 10, 11, 12)))
 
     // when
 
@@ -824,8 +840,7 @@ class MatrixTest extends AnyFlatSpec {
 
     // given
 
-    val matrix: Matrix[Int] = new Matrix(3, 4)
-    matrix.set(Vector(Vector(1, 2, 3, 4), Vector(5, 6, 7, 8), Vector(9, 10, 11, 12)))
+    val matrix: Matrix[Int] = Matrix.vectorToMatrix(Vector(Vector(1, 2, 3, 4), Vector(5, 6, 7, 8), Vector(9, 10, 11, 12)))
 
     // when
 
