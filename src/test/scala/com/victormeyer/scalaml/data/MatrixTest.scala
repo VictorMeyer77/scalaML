@@ -337,6 +337,48 @@ class MatrixTest extends AnyFlatSpec {
 
   }
 
+  it should "add matrix to another matrix" in {
+
+    // given
+
+    val matrixA: Matrix[Int] = Matrix.vectorToMatrix(Vector(Vector(1, 2, 3), Vector(2, 3, 4), Vector(5, 6, 7)))
+    val matrixB: Matrix[Int] = Matrix.vectorToMatrix(Vector(Vector(6, 8, 1), Vector(4, 7, 1), Vector(3, 1, 1)))
+    val matrixC: Matrix[Int] = new Matrix(300, 800, 5)
+
+    // when
+
+    val sumA: Matrix[Int] = matrixA + matrixB
+    val sumB: Matrix[Int] = matrixC + matrixC
+
+    // then
+
+    assert(sumA == Matrix.vectorToMatrix(Vector(Vector(7, 10, 4), Vector(6, 10, 5), Vector(8, 7, 8))))
+    assert(sumB == new Matrix[Int](300, 800, 10))
+
+  }
+
+  it should "raise exception when matrices don't have same dimensions" in {
+
+    // given
+
+    val matrixA: Matrix[Int] = Matrix.vectorToMatrix(Vector(Vector(1, 2, 3), Vector(2, 3, 4), Vector(5, 6, 7)))
+    val matrixB: Matrix[Int] = new Matrix(300, 800, 5)
+    var errorMessage: String = ""
+
+    // when
+
+    try {
+      matrixA + matrixB
+    } catch {
+      case e: IllegalArgumentException => errorMessage = e.getMessage
+    }
+
+    // then
+
+    assert(errorMessage == "Invalid matrices shapes: (3,3) != (300,800)")
+
+  }
+
   "Matrix -" should "subtract element to each cell of matrix" in {
 
     // given
@@ -353,6 +395,49 @@ class MatrixTest extends AnyFlatSpec {
 
   }
 
+  it should "subtract matrix to another matrix" in {
+
+    // given
+
+    val matrixA: Matrix[Int] = Matrix.vectorToMatrix(Vector(Vector(1, 2, 3), Vector(2, 3, 4), Vector(5, 6, 7)))
+    val matrixB: Matrix[Int] = Matrix.vectorToMatrix(Vector(Vector(6, 8, 1), Vector(4, 7, 1), Vector(3, 1, 1)))
+    val matrixD: Matrix[Int] = new Matrix(300, 800, 10)
+    val matrixC: Matrix[Int] = new Matrix(300, 800, 6)
+
+    // when
+
+    val sumA: Matrix[Int] = matrixA - matrixB
+    val sumB: Matrix[Int] = matrixD - matrixC
+
+    // then
+
+    assert(sumA == Matrix.vectorToMatrix(Vector(Vector(-5, -6, 2), Vector(-2, -4, 3), Vector(2, 5, 6))))
+    assert(sumB == new Matrix[Int](300, 800, 4))
+
+  }
+
+  it should "raise exception when matrices don't have same dimensions" in {
+
+    // given
+
+    val matrixA: Matrix[Int] = Matrix.vectorToMatrix(Vector(Vector(1, 2, 3), Vector(2, 3, 4), Vector(5, 6, 7)))
+    val matrixB: Matrix[Int] = new Matrix(300, 800, 5)
+    var errorMessage: String = ""
+
+    // when
+
+    try {
+      matrixA - matrixB
+    } catch {
+      case e: IllegalArgumentException => errorMessage = e.getMessage
+    }
+
+    // then
+
+    assert(errorMessage == "Invalid matrices shapes: (3,3) != (300,800)")
+
+  }
+
   "Matrix *" should "multiply element to each cell of matrix" in {
 
     // given
@@ -366,6 +451,49 @@ class MatrixTest extends AnyFlatSpec {
     // then
 
     assert(computeMatrix.equals(Matrix.vectorToMatrix(Vector(Vector(6, 12, 18), Vector(12, 18, 24), Vector(30, 36, 42)))))
+
+  }
+
+  it should "multiply matrix to another matrix" in {
+
+    // given
+
+    val matrixA: Matrix[Int] = Matrix.vectorToMatrix(Vector(Vector(1, 2, 0), Vector(4, 3, -1)))
+    val matrixB: Matrix[Int] = Matrix.vectorToMatrix(Vector(Vector(5, 1), Vector(2, 3), Vector(3, 4)))
+    val matrixC: Matrix[Int] = new Matrix(300, 800, 0)
+    val matrixD: Matrix[Int] = new Matrix(800, 600, 0)
+
+    // when
+
+    val sumA: Matrix[Int] = matrixA * matrixB
+    val sumB: Matrix[Int] = matrixC * matrixD
+
+    // then
+
+    assert(sumA == Matrix.vectorToMatrix(Vector(Vector(9, 7), Vector(23, 9))))
+    assert(sumB == new Matrix[Int](300, 600, 0))
+
+  }
+
+  it should "raise exception when matrices don't have same dimensions" in {
+
+    // given
+
+    val matrixA: Matrix[Int] = Matrix.vectorToMatrix(Vector(Vector(1, 2, 3), Vector(2, 3, 4), Vector(5, 6, 7)))
+    val matrixB: Matrix[Int] = new Matrix(300, 800, 5)
+    var errorMessage: String = ""
+
+    // when
+
+    try {
+      matrixA * matrixB
+    } catch {
+      case e: IllegalArgumentException => errorMessage = e.getMessage
+    }
+
+    // then
+
+    assert(errorMessage == "Invalid matrices shapes: n * m == m * p != 3 * 3 != 300 * 800")
 
   }
 
@@ -406,6 +534,28 @@ class MatrixTest extends AnyFlatSpec {
         assert((computeMatrix.get(i)(j) - scala.math.pow(matrix.get(i)(j), 3.0)) *  (computeMatrix.get(i)(j) - scala.math.pow(matrix.get(i)(j), 3.0)) < 0.000001)
       }
     }
+
+  }
+
+  it should "pow matrix" in {
+
+    // given
+
+    val matrixA: Matrix[Int] = Matrix.vectorToMatrix(Vector(Vector(-3, -3), Vector(5, -6)))
+    val matrixB: Matrix[Int] = Matrix.vectorToMatrix(Vector(Vector(1, 2, 3, 4), Vector(5, 6, 7, 8),
+      Vector(9, 10, 11, 12), Vector(13, 14, 15, 16)))
+
+    // when
+
+    val computeMatrixA: Matrix[Int] = matrixA ^ 2
+    val computeMatrixB: Matrix[Int] = matrixB ^ 4
+
+    // then
+
+    assert(computeMatrixA.equals(Matrix.vectorToMatrix(Vector(Vector(-6, 27), Vector(-45, 21)))))
+    assert(computeMatrixB.equals(Matrix.vectorToMatrix(Vector(
+      Vector(113960, 129040, 144120, 159200), Vector(263272, 298128, 332984, 367840),
+      Vector(412584, 467216, 521848, 576480), Vector(561896, 636304, 710712, 785120)))))
 
   }
 

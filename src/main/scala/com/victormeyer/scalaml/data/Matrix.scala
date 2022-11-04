@@ -124,6 +124,21 @@ class Matrix[T](rows: Int, cols: Int, initValue: T=null.asInstanceOf[T]) {
     Matrix.vectorToMatrix(outputVector)
   }
 
+  /** Addition between two matrices
+   *
+   * @param matrix Matrix to add
+   * @param numeric Numeric instance
+   * @return New matrix of addition
+   */
+  def +(matrix: Matrix[T])(implicit numeric: Numeric[T]): Matrix[T] ={
+    if(shape != matrix.shape){
+      throw new IllegalArgumentException(s"Invalid matrices shapes: $shape != ${matrix.shape}")
+    }
+    val sum: Vector[Vector[T]] =
+      this.matrix.map(row => Vector(row, matrix.get(this.matrix.indexOf(row))).transpose.map(_.sum))
+    Matrix.vectorToMatrix(sum)
+  }
+
   /** Subtract element to each cell of matrix
    *
    * @param value Element to subtract
@@ -133,6 +148,21 @@ class Matrix[T](rows: Int, cols: Int, initValue: T=null.asInstanceOf[T]) {
   def -(value: T)(implicit numeric: Numeric[T]): Matrix[T] ={
     val outputVector: Vector[Vector[T]] = matrix.map(row => row.map(col => col - value))
     Matrix.vectorToMatrix(outputVector)
+  }
+
+  /** Subtraction between two matrices
+   *
+   * @param matrix Matrix to subtract
+   * @param numeric Numeric instance
+   * @return New matrix of subtraction
+   */
+  def -(matrix: Matrix[T])(implicit numeric: Numeric[T]): Matrix[T] ={
+    if(shape != matrix.shape){
+      throw new IllegalArgumentException(s"Invalid matrices shapes: $shape != ${matrix.shape}")
+    }
+    val difference: Vector[Vector[T]] =
+      this.matrix.map(row => Vector(row, matrix.get(this.matrix.indexOf(row))).transpose.map(v => v(0) - v(1)))
+    Matrix.vectorToMatrix(difference)
   }
 
   /** Multiply element to each cell of matrix
@@ -146,6 +176,23 @@ class Matrix[T](rows: Int, cols: Int, initValue: T=null.asInstanceOf[T]) {
     Matrix.vectorToMatrix(outputVector)
   }
 
+  /** Product between two matrices
+   *
+   * @param matrix Matrix to multiply
+   * @param numeric Numeric instance
+   * @return Product of the two matrices
+   */
+  def *(matrix: Matrix[T])(implicit numeric: Numeric[T]): Matrix[T] ={
+    if(shape._2 != matrix.shape._1){
+      throw new IllegalArgumentException(s"Invalid matrices shapes: " +
+        s"n * m == m * p != ${shape._1} * ${shape._2} != ${matrix.shape._1} * ${matrix.shape._2}")
+    }
+    val product: Vector[Vector[T]] =
+      this.matrix.map(a => matrix.get.transpose.map(b => Vector(a, b)))
+        .map(c => c.map(d => d.transpose.map(e => e(0) * e(1))).map(f => f.sum))
+    Matrix.vectorToMatrix(product)
+  }
+
   /** Divide element to each cell of matrix
    *
    * @param value Element to divide
@@ -157,6 +204,8 @@ class Matrix[T](rows: Int, cols: Int, initValue: T=null.asInstanceOf[T]) {
     Matrix.vectorToMatrix(outputVector)
   }
 
+  def /(matrix: Matrix[T])(implicit numeric: Numeric[T]): Matrix[T] = ???
+
   /** Pow element to each cell of matrix
    *
    * @param value Element to pow
@@ -166,6 +215,20 @@ class Matrix[T](rows: Int, cols: Int, initValue: T=null.asInstanceOf[T]) {
   def ^(value: Double)(implicit numeric: Numeric[T]): Matrix[Double] ={
     val outputVector: Vector[Vector[Double]] = matrix.map(row => row.map(col => scala.math.pow(col.toDouble, value)))
     Matrix.vectorToMatrix(outputVector)
+  }
+
+  /** Pow matrix
+   *
+   * @param value Exponent of the matrix
+   * @param numeric Numeric instance
+   * @return Powered matrix
+   */
+  def ^(value: Int)(implicit numeric: Numeric[T]): Matrix[T] ={
+    if(value > 0) {
+      (1 until value).foldLeft(this)((acc, m) => this * acc)
+    } else {
+      ???
+    }
   }
 
   override def toString: String ={
