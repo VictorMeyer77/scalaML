@@ -147,7 +147,7 @@ class Matrix[T](rows: Int, cols: Int, initValue: T=null.asInstanceOf[T]) {
       throw new IllegalArgumentException(s"Invalid matrices shapes: $shape != ${matrix.shape}")
     }
     val sum: Vector[Vector[T]] =
-      this.matrix.map(row => Vector(row, matrix.get(this.matrix.indexOf(row))).transpose.map(_.sum))
+      this.matrix.zipWithIndex.map(row => Vector(row._1, matrix.get(row._2)).transpose.map(_.sum))
     Matrix.vectorToMatrix(sum)
   }
 
@@ -173,7 +173,7 @@ class Matrix[T](rows: Int, cols: Int, initValue: T=null.asInstanceOf[T]) {
       throw new IllegalArgumentException(s"Invalid matrices shapes: $shape != ${matrix.shape}")
     }
     val difference: Vector[Vector[T]] =
-      this.matrix.map(row => Vector(row, matrix.get(this.matrix.indexOf(row))).transpose.map(v => v(0) - v(1)))
+      this.matrix.zipWithIndex.map(row => Vector(row._1, matrix.get(row._2)).transpose.map(v => v(0) - v(1)))
     Matrix.vectorToMatrix(difference)
   }
 
@@ -358,12 +358,12 @@ object Matrix {
       throw new IllegalArgumentException(s"Invalid column indexes: [${cols.mkString(", ")}] >= ${shape._2}")
     }
     val selectRows: Vector[Vector[T]] = if(rows.nonEmpty) {
-      matrix.get.filter(row => rows.contains(matrix.get.indexOf(row)))
+      matrix.get.zipWithIndex.filter(row => rows.contains(row._2)).map(row => row._1)
     } else {
       matrix.get
     }
     val selectVector: Vector[Vector[T]] = if(cols.nonEmpty) {
-      selectRows.map(row => row.filter(col => cols.contains(row.indexOf(col))))
+      selectRows.map(row => row.zipWithIndex.filter(col => cols.contains(col._2)).map(col => col._1))
     } else {
       selectRows
     }

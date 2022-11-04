@@ -360,8 +360,8 @@ class MatrixTest extends AnyFlatSpec {
 
     // given
 
-    val matrixA: Matrix[Int] = Matrix.vectorToMatrix(Vector(Vector(1, 2, 3), Vector(2, 3, 4), Vector(5, 6, 7)))
-    val matrixB: Matrix[Int] = Matrix.vectorToMatrix(Vector(Vector(6, 8, 1), Vector(4, 7, 1), Vector(3, 1, 1)))
+    val matrixA: Matrix[Int] = Matrix.vectorToMatrix(Vector(Vector(1, 2, 3), Vector(2, 3, 4), Vector(5, 6, 7), Vector(1, 2, 3)))
+    val matrixB: Matrix[Int] = Matrix.vectorToMatrix(Vector(Vector(6, 8, 1), Vector(4, 7, 1), Vector(3, 1, 1), Vector(4, 7, 1)))
     val matrixC: Matrix[Int] = new Matrix(300, 800, 5)
 
     // when
@@ -371,7 +371,7 @@ class MatrixTest extends AnyFlatSpec {
 
     // then
 
-    assert(sumA == Matrix.vectorToMatrix(Vector(Vector(7, 10, 4), Vector(6, 10, 5), Vector(8, 7, 8))))
+    assert(sumA == Matrix.vectorToMatrix(Vector(Vector(7, 10, 4), Vector(6, 10, 5), Vector(8, 7, 8), Vector(5, 9, 4))))
     assert(sumB == new Matrix[Int](300, 800, 10))
 
   }
@@ -418,8 +418,8 @@ class MatrixTest extends AnyFlatSpec {
 
     // given
 
-    val matrixA: Matrix[Int] = Matrix.vectorToMatrix(Vector(Vector(1, 2, 3), Vector(2, 3, 4), Vector(5, 6, 7)))
-    val matrixB: Matrix[Int] = Matrix.vectorToMatrix(Vector(Vector(6, 8, 1), Vector(4, 7, 1), Vector(3, 1, 1)))
+    val matrixA: Matrix[Int] = Matrix.vectorToMatrix(Vector(Vector(1, 2, 3), Vector(2, 3, 4), Vector(5, 6, 7), Vector(1, 2, 3)))
+    val matrixB: Matrix[Int] = Matrix.vectorToMatrix(Vector(Vector(6, 8, 1), Vector(4, 7, 1), Vector(3, 1, 1), Vector(4, 7, 1)))
     val matrixD: Matrix[Int] = new Matrix(300, 800, 10)
     val matrixC: Matrix[Int] = new Matrix(300, 800, 6)
 
@@ -430,7 +430,7 @@ class MatrixTest extends AnyFlatSpec {
 
     // then
 
-    assert(sumA == Matrix.vectorToMatrix(Vector(Vector(-5, -6, 2), Vector(-2, -4, 3), Vector(2, 5, 6))))
+    assert(sumA == Matrix.vectorToMatrix(Vector(Vector(-5, -6, 2), Vector(-2, -4, 3), Vector(2, 5, 6), Vector(-3, -5, 2))))
     assert(sumB == new Matrix[Int](300, 800, 4))
 
   }
