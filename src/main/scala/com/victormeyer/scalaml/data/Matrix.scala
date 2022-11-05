@@ -584,4 +584,50 @@ object Matrix {
     avgMatrix(matrix ^ 2.0) - (avgMatrix(matrix) ^ 2.0)
   }
 
+  /** Concatenate two matrices
+   *
+   * @param matrixA Left matrix
+   * @param matrixB Right Matrix
+   * @param axis Type of concatenation: 'R' for rows, 'C' for columns
+   * @tparam T Type of matrix
+   * @return Concatenation of the two matrices
+   */
+  def concat[T](matrixA: Matrix[T], matrixB: Matrix[T], axis: Char='R'): Matrix[T] ={
+    axis.toUpper match {
+      case 'R' => concatRow(matrixA, matrixB)
+      case 'C' => concatColumn(matrixA, matrixB)
+      case _ => throw new IllegalArgumentException(s"Invalid axis '$axis'. 'R' => row, 'C' => column")
+    }
+  }
+
+  /** Concatenate two matrices on rows
+   *
+   * @param matrixA Left matrix
+   * @param matrixB Right Matrix
+   * @tparam T Type of matrix
+   * @return Concatenation of the two matrices
+   */
+  private def concatRow[T](matrixA: Matrix[T], matrixB: Matrix[T]): Matrix[T] ={
+    if(matrixA.shape._2 != matrixB.shape._2){
+      throw new IllegalArgumentException("Invalid matrices shapes: " +
+        s"matrixA has ${matrixA.shape._2} columns and matrixB has ${matrixB.shape._2} columns.")
+    }
+    vectorToMatrix(matrixA.get ++ matrixB.get)
+  }
+
+  /** Concatenate two matrices on columns
+   *
+   * @param matrixA Left matrix
+   * @param matrixB Right Matrix
+   * @tparam T Type of matrix
+   * @return Concatenation of the two matrices
+   */
+  private def concatColumn[T](matrixA: Matrix[T], matrixB: Matrix[T]): Matrix[T] ={
+    if(matrixA.shape._1 != matrixB.shape._1){
+      throw new IllegalArgumentException("Invalid matrices shapes: " +
+        s"matrixA has ${matrixA.shape._1} rows and matrixB has ${matrixB.shape._1} rows.")
+    }
+    vectorToMatrix(matrixA.get.zip(matrixB.get).map(pair => pair._1 ++ pair._2))
+  }
+
 }

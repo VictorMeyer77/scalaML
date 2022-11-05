@@ -1241,4 +1241,103 @@ class MatrixTest extends AnyFlatSpec {
 
   }
 
+  "Matrix.concatRow" should "merge two matrices on rows" in {
+
+    // given
+
+    val matrixA: Matrix[Int] = Matrix.vectorToMatrix(Vector(Vector(1, 4, 8, 7), Vector(7, 9, 89, 9)))
+    val matrixB: Matrix[Int] = Matrix.vectorToMatrix(Vector(Vector(2, 3, 6, 89), Vector(17, 56, 89, 12), Vector(11, 22, 77, 99)))
+
+    // when
+
+    val concat: Matrix[Int] = Matrix.concat(matrixA, matrixB)
+
+    // then
+
+    assert(concat == Matrix.vectorToMatrix(Vector(Vector(1, 4, 8, 7), Vector(7, 9, 89, 9), Vector(2, 3, 6, 89), Vector(17, 56, 89, 12), Vector(11, 22, 77, 99))))
+
+  }
+
+  it should "raise exception when matrices have not same column shape" in {
+
+    // given
+
+    val matrixA: Matrix[Int] = Matrix.vectorToMatrix(Vector(Vector(1, 4, 8, 7, 8), Vector(7, 9, 89, 9, 9)))
+    val matrixB: Matrix[Int] = Matrix.vectorToMatrix(Vector(Vector(2, 3, 6, 89), Vector(17, 56, 89, 12)))
+    var errorMessage = ""
+
+    // when
+
+    try {
+      Matrix.concat(matrixA, matrixB)
+    } catch {
+      case e: IllegalArgumentException => errorMessage = e.getMessage
+    }
+
+    // then
+
+    assert(errorMessage == "Invalid matrices shapes: matrixA has 5 columns and matrixB has 4 columns.")
+
+  }
+
+  "Matrix.concatColumn" should "merge two matrices on columns" in {
+
+    // given
+
+    val matrixA: Matrix[Int] = Matrix.vectorToMatrix(Vector(Vector(1, 4, 8, 7), Vector(7, 9, 89, 9)))
+    val matrixB: Matrix[Int] = Matrix.vectorToMatrix(Vector(Vector(2, 3, 6, 89, 66), Vector(17, 56, 89, 12, 66)))
+
+    // when
+
+    val concat: Matrix[Int] = Matrix.concat(matrixA, matrixB, 'C')
+
+    // then
+
+    assert(concat == Matrix.vectorToMatrix(Vector(Vector(1, 4, 8, 7, 2, 3, 6, 89, 66), Vector(7, 9, 89, 9, 17, 56, 89, 12, 66))))
+
+  }
+
+  it should "raise exception when matrices have not same row shape" in {
+
+    // given
+
+    val matrixA: Matrix[Int] = Matrix.vectorToMatrix(Vector(Vector(1, 4, 8, 7), Vector(7, 9, 89, 9)))
+    val matrixB: Matrix[Int] = Matrix.vectorToMatrix(Vector(Vector(17, 56, 89, 12)))
+    var errorMessage = ""
+
+    // when
+
+    try {
+      Matrix.concat(matrixA, matrixB, 'C')
+    } catch {
+      case e: IllegalArgumentException => errorMessage = e.getMessage
+    }
+
+    // then
+
+    assert(errorMessage == "Invalid matrices shapes: matrixA has 2 rows and matrixB has 1 rows.")
+
+  }
+
+  "Matrix.concat" should "raise exception when axis is unknown" in {
+
+    // given
+
+    val matrix: Matrix[Int] = Matrix.vectorToMatrix(Vector())
+    var errorMessage: String = ""
+
+    // when
+
+    try {
+      Matrix.concat(matrix, matrix, 'U')
+    } catch {
+      case e: IllegalArgumentException => errorMessage = e.getMessage
+    }
+
+    // then
+
+    assert(errorMessage == "Invalid axis 'U'. 'R' => row, 'C' => column")
+
+  }
+
 }
