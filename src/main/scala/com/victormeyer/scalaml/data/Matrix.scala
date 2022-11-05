@@ -503,6 +503,9 @@ object Matrix {
    * @return Matrix of covariance
    */
   def covariance[T](matrix: Matrix[T])(implicit numeric: Numeric[T]): Matrix[Double] ={
+    if(matrix.shape._1 == 0 || matrix.shape._2 == 0){
+      throw new IllegalArgumentException("Matrix is empty")
+    }
     val avgRows: Matrix[Double] = avgRow(matrix)
     val vectors: Vector[Vector[T]] = matrix.get
     val rowLength: Double = matrix.shape._1.toDouble
@@ -514,6 +517,71 @@ object Matrix {
       }).toVector
     }).toVector
     vectorToMatrix(covVectors)
+  }
+
+  /** Compute variance of a matrix
+   *
+   * @param matrix Matrix to compute variance
+   * @param axis Type of variance: 'A' for all cells, 'R' for rows, 'C' for columns
+   * @param numeric Numeric instance
+   * @tparam T Type of matrix
+   * @return Matrix of variances
+   */
+  def variance[T](matrix: Matrix[T], axis: Char='A')(implicit numeric: Numeric[T]): Matrix[Double] ={
+    axis.toUpper match {
+      case 'A' => varianceMatrix(matrix)
+      case 'R' => varianceRow(matrix)
+      case 'C' => varianceColumn(matrix)
+      case _ => throw new IllegalArgumentException(s"Invalid axis '$axis'. 'A' => all, 'R' => row, 'C' => column")
+    }
+  }
+
+  /** Compute variance of each rows
+   *
+   * @param matrix Matrix to compute variance
+   * @param numeric Numeric instance
+   * @tparam T Type of matrix
+   * @return Matrix of variances
+   */
+  private def varianceRow[T](matrix: Matrix[T])(implicit numeric: Numeric[T]): Matrix[Double] ={
+    if(matrix.shape._2 == 0){
+      throw new IllegalArgumentException("Invalid matrix: no columns")
+    }
+    val variances: Vector[Double] = matrix.get.map(row => {
+      (row.map(c => c * c).sum.toDouble / row.length.toDouble) - scala.math.pow(row.sum.toDouble / row.length.toDouble, 2)
+    })
+    vectorToMatrix(Vector(variances))
+  }
+
+  /** Compute variances of each columns
+   *
+   * @param matrix Matrix to compute variances
+   * @param numeric Numeric instance
+   * @tparam T Type of matrix
+   * @return Matrix of variances
+   */
+  private def varianceColumn[T](matrix: Matrix[T])(implicit numeric: Numeric[T]): Matrix[Double] ={
+    if(matrix.shape._1 == 0){
+      throw new IllegalArgumentException("Invalid matrix: no rows")
+    }
+    val variances: Vector[Double] = matrix.get.transpose.map(row => {
+      (row.map(c => c * c).sum.toDouble / row.length.toDouble) - scala.math.pow(row.sum.toDouble / row.length.toDouble, 2)
+    })
+    vectorToMatrix(Vector(variances))
+  }
+
+  /** Compute variance of each cells
+   *
+   * @param matrix Matrix to compute variance
+   * @param numeric Numeric instance
+   * @tparam T Type of matrix
+   * @return Matrix of variance
+   */
+  private def varianceMatrix[T](matrix: Matrix[T])(implicit numeric: Numeric[T]): Matrix[Double] ={
+    if(matrix.shape._1 == 0 || matrix.shape._2 == 0){
+      throw new IllegalArgumentException("Matrix is empty")
+    }
+    avgMatrix(matrix ^ 2.0) - (avgMatrix(matrix) ^ 2.0)
   }
 
 }

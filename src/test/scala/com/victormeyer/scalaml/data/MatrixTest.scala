@@ -1045,4 +1045,200 @@ class MatrixTest extends AnyFlatSpec {
 
   }
 
+  it should "raise exception when matrix is empty" in {
+
+    // given
+
+    val matrixA: Matrix[Int] = Matrix.vectorToMatrix(Vector())
+    val matrixB: Matrix[Int] = Matrix.vectorToMatrix(Vector(Vector()))
+    var errorMessageA: String = ""
+    var errorMessageB: String = ""
+
+    // when
+
+    try {
+      Matrix.covariance(matrixA)
+    } catch {
+      case e: IllegalArgumentException => errorMessageA = e.getMessage
+    }
+
+    try {
+      Matrix.variance(matrixB)
+    } catch {
+      case e: IllegalArgumentException => errorMessageB = e.getMessage
+    }
+
+    // then
+
+    assert(errorMessageA == "Matrix is empty")
+    assert(errorMessageB == "Matrix is empty")
+
+  }
+
+  "Matrix.varianceMatrix" should "return variance of whole matrix" in {
+
+    // given
+
+    val matrix: Matrix[Int] = Matrix.vectorToMatrix(Vector(
+      Vector(1, 4, 8, 7),
+      Vector(7, 9, 89, 9),
+      Vector(2, 3, 6, 89),
+      Vector(17, 56, 89, 12)
+    ))
+
+    // when
+
+    val variance: Matrix[Double] = Matrix.variance(matrix)
+
+    // then
+
+    assert(variance.equals(Matrix.vectorToMatrix(Vector(Vector(1082.375)))))
+
+  }
+
+  it should "raise exception when matrix is empty" in {
+
+    // given
+
+    val matrixA: Matrix[Int] = Matrix.vectorToMatrix(Vector())
+    val matrixB: Matrix[Int] = Matrix.vectorToMatrix(Vector(Vector()))
+    var errorMessageA: String = ""
+    var errorMessageB: String = ""
+
+    // when
+
+    try {
+      Matrix.variance(matrixA)
+    } catch {
+      case e: IllegalArgumentException => errorMessageA = e.getMessage
+    }
+
+    try {
+      Matrix.variance(matrixB)
+    } catch {
+      case e: IllegalArgumentException => errorMessageB = e.getMessage
+    }
+
+    // then
+
+    assert(errorMessageA == "Matrix is empty")
+    assert(errorMessageB == "Matrix is empty")
+
+  }
+
+  "Matrix.varianceRow" should "return variance of matrix rows" in {
+
+    // given
+
+    val matrix: Matrix[Int] = Matrix.vectorToMatrix(Vector(
+      Vector(1, 4, 8, 7),
+      Vector(7, 9, 89, 9),
+      Vector(2, 3, 6, 89),
+      Vector(17, 56, 89, 12)
+    ))
+    val targetMatrix: Matrix[Double] = Matrix.vectorToMatrix(Vector(Vector(7.5, 1220.75, 1367.5, 980.25)))
+
+    // when
+
+    val variance: Matrix[Double] = Matrix.variance(matrix, 'R')
+
+    // then
+
+    for(i <- targetMatrix.get.indices) {
+      for(j <- targetMatrix.get(i).indices) {
+        assert(scala.math.pow(variance.get(i)(j) - targetMatrix.get(i)(j), 2) < 0.000001)
+      }
+    }
+
+  }
+
+  it should "raise exception when matrix hasn't columns" in {
+
+    // given
+
+    val matrix: Matrix[Int] = Matrix.vectorToMatrix(Vector(Vector(), Vector(), Vector()))
+    var errorMessage: String = ""
+
+    // when
+
+    try {
+      Matrix.variance(matrix, 'R')
+    } catch {
+      case e: IllegalArgumentException => errorMessage = e.getMessage
+    }
+
+    // then
+
+    assert(errorMessage == "Invalid matrix: no columns")
+
+  }
+
+  "Matrix.varianceColumn" should "return variance of matrix columns" in {
+
+    // given
+
+    val matrix: Matrix[Int] = Matrix.vectorToMatrix(Vector(
+      Vector(1, 4, 8, 7),
+      Vector(7, 9, 89, 9),
+      Vector(2, 3, 6, 89),
+      Vector(17, 56, 89, 12)
+    ))
+    val targetMatrix: Matrix[Double] = Matrix.vectorToMatrix(Vector(Vector(40.1875, 486.5, 1681.5, 1193.1875)))
+
+    // when
+
+    val variance: Matrix[Double] = Matrix.variance(matrix, 'C')
+
+    // then
+
+    for(i <- targetMatrix.get.indices) {
+      for(j <- targetMatrix.get(i).indices) {
+        assert(scala.math.pow(variance.get(i)(j) - targetMatrix.get(i)(j), 2) < 0.000001)
+      }
+    }
+
+  }
+
+  it should "raise exception when matrix hasn't rows" in {
+
+    // given
+
+    val matrix: Matrix[Int] = Matrix.vectorToMatrix(Vector())
+    var errorMessage: String = ""
+
+    // when
+
+    try {
+      Matrix.variance(matrix, 'C')
+    } catch {
+      case e: IllegalArgumentException => errorMessage = e.getMessage
+    }
+
+    // then
+
+    assert(errorMessage == "Invalid matrix: no rows")
+
+  }
+
+  "Matrix.variance" should "raise exception when axis is unknown" in {
+
+    // given
+
+    val matrix: Matrix[Int] = Matrix.vectorToMatrix(Vector())
+    var errorMessage: String = ""
+
+    // when
+
+    try {
+      Matrix.variance(matrix, 'T')
+    } catch {
+      case e: IllegalArgumentException => errorMessage = e.getMessage
+    }
+
+    // then
+
+    assert(errorMessage == "Invalid axis 'T'. 'A' => all, 'R' => row, 'C' => column")
+
+  }
+
 }
