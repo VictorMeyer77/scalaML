@@ -323,7 +323,7 @@ class MatrixTest extends AnyFlatSpec {
 
   }
 
-  it should "delete column in matrix" in {
+  it should "delete columns in matrix" in {
 
     // given
 
@@ -1011,6 +1011,37 @@ class MatrixTest extends AnyFlatSpec {
     // then
 
     assert(errorMessage == "Invalid axis 'T'. 'A' => all, 'R' => row, 'C' => column")
+
+  }
+
+  "Matrix.covariance" should "return covariance matrix" in {
+
+    // given
+
+    val matrix: Matrix[Int] = Matrix.vectorToMatrix(Vector(
+      Vector(1, 4, 8, 7),
+      Vector(7, 9, 89, 9),
+      Vector(2, 3, 6, 89),
+      Vector(17, 56, 89, 12)
+    ))
+    val targetMatrix: Matrix[Double] = Matrix.vectorToMatrix(Vector(
+      Vector(7.5, 62.0, 46.25, 41.75),
+      Vector(62.0 , 1220.75, -368.5,  923.25),
+      Vector(46.25, -368.5, 1367.5, -636.5),
+      Vector(41.75,  923.25, -636.5 , 980.25)
+    ))
+
+    // when
+
+    val covariance: Matrix[Double] = Matrix.covariance(matrix)
+
+    // then
+
+    for(i <- targetMatrix.get.indices) {
+      for(j <- targetMatrix.get(i).indices) {
+        assert(scala.math.pow(covariance.get(i)(j) - targetMatrix.get(i)(j), 2) < 0.000001)
+      }
+    }
 
   }
 

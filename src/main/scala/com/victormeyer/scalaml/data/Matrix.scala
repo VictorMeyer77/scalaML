@@ -495,4 +495,25 @@ object Matrix {
     sumMatrix(matrix) / (matrix.shape._1 * matrix.shape._2)
   }
 
+  /** Compute the covariance matrix
+   *
+   * @param matrix Matrix to compute covariance
+   * @param numeric Numeric instance
+   * @tparam T Type of matrix
+   * @return Matrix of covariance
+   */
+  def covariance[T](matrix: Matrix[T])(implicit numeric: Numeric[T]): Matrix[Double] ={
+    val avgRows: Matrix[Double] = avgRow(matrix)
+    val vectors: Vector[Vector[T]] = matrix.get
+    val rowLength: Double = matrix.shape._1.toDouble
+    val covVectors: Vector[Vector[Double]] = vectors.indices.map(rowIndexA => {
+      vectors.indices.map(rowIndexB => {
+        vectors(rowIndexA).zip(vectors(rowIndexB)).map(pair => {
+          pair._1 * pair._2
+        }).sum.toDouble / rowLength - avgRows.get(rowIndexA)(0) * avgRows.get(rowIndexB)(0)
+      }).toVector
+    }).toVector
+    vectorToMatrix(covVectors)
+  }
+
 }
