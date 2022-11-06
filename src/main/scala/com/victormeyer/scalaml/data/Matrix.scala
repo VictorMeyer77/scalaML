@@ -17,9 +17,20 @@ class Matrix[T](rows: Int, cols: Int, initValue: T=null.asInstanceOf[T]) {
 
   /** Get the matrix
    *
-   * @return Vector of vectors composing matrix
+   * @return All rows from the matrix
    */
-  def get: Vector[Vector[T]] = matrix
+  def apply(): Vector[Vector[T]] = matrix
+
+  /** Get matrix row
+   *
+   * @return Specific row from the matrix
+   */
+  def apply(index: Int): Vector[T] ={
+    if(index >= shape._1) {
+      throw new IndexOutOfBoundsException(s"Invalid index: $index >= ${shape._1}")
+    }
+    matrix(index)
+  }
 
   /** Print matrix in a formatted string */
   def show(): Unit = println(toString)
@@ -28,7 +39,7 @@ class Matrix[T](rows: Int, cols: Int, initValue: T=null.asInstanceOf[T]) {
    *
    * @return Tuple of integer composed by number of rows and number of columns
    */
-  def shape: (Int, Int) = {
+  def shape: (Int, Int) ={
     if(matrix.nonEmpty){
       (matrix.length, matrix(0).length)
     } else {
@@ -161,7 +172,7 @@ class Matrix[T](rows: Int, cols: Int, initValue: T=null.asInstanceOf[T]) {
       throw new IllegalArgumentException(s"Invalid matrices shapes: $shape != ${matrix.shape}")
     }
     val sum: Vector[Vector[T]] =
-      this.matrix.zipWithIndex.map(row => Vector(row._1, matrix.get(row._2)).transpose.map(_.sum))
+      this.matrix.zipWithIndex.map(row => Vector(row._1, matrix(row._2)).transpose.map(_.sum))
     Matrix.vectorToMatrix(sum)
   }
 
@@ -187,7 +198,7 @@ class Matrix[T](rows: Int, cols: Int, initValue: T=null.asInstanceOf[T]) {
       throw new IllegalArgumentException(s"Invalid matrices shapes: $shape != ${matrix.shape}")
     }
     val difference: Vector[Vector[T]] =
-      this.matrix.zipWithIndex.map(row => Vector(row._1, matrix.get(row._2)).transpose.map(v => v(0) - v(1)))
+      this.matrix.zipWithIndex.map(row => Vector(row._1, matrix(row._2)).transpose.map(v => v(0) - v(1)))
     Matrix.vectorToMatrix(difference)
   }
 
@@ -214,7 +225,7 @@ class Matrix[T](rows: Int, cols: Int, initValue: T=null.asInstanceOf[T]) {
         s"n * m == m * p != ${shape._1} * ${shape._2} != ${matrix.shape._1} * ${matrix.shape._2}")
     }
     val product: Vector[Vector[T]] =
-      this.matrix.map(a => matrix.get.transpose.map(b => Vector(a, b)))
+      this.matrix.map(a => matrix().transpose.map(b => Vector(a, b)))
         .map(c => c.map(d => d.transpose.map(e => e(0) * e(1))).map(f => f.sum))
     Matrix.vectorToMatrix(product)
   }
@@ -301,7 +312,7 @@ class Matrix[T](rows: Int, cols: Int, initValue: T=null.asInstanceOf[T]) {
       } else {
         var i: Int = 0
         while(i < this.matrix.length && equal){
-          if(matrix.get(i) != this.matrix(i))
+          if(matrix(i) != this.matrix(i))
             equal = false
           i += 1
         }
@@ -312,7 +323,7 @@ class Matrix[T](rows: Int, cols: Int, initValue: T=null.asInstanceOf[T]) {
 
   override def clone: Matrix[T] ={
     val matrix: Matrix[T] = new Matrix[T](rows, cols, initValue)
-    matrix.replaceMatrix(get)
+    matrix.replaceMatrix(this())
     matrix
   }
 
@@ -349,7 +360,7 @@ object Matrix {
       throw new IllegalArgumentException(s"Invalid dimensions: ${matrix.shape._1} * ${matrix.shape._2} != $rows * $cols")
     }
     var vectorBuffer: Vector[Vector[T]] = Vector.fill(rows)(Vector())
-    val flatMatrix: Vector[T] = matrix.get.foldLeft(Vector[T]())((acc, v) => acc ++ v)
+    val flatMatrix: Vector[T] = matrix().foldLeft(Vector[T]())((acc, v) => acc ++ v)
     for(i <- 0 until rows){
       vectorBuffer = vectorBuffer updated (i, flatMatrix.slice(i * cols, i * cols + cols))
     }
@@ -372,9 +383,9 @@ object Matrix {
       throw new IllegalArgumentException(s"Invalid column indexes: [${cols.mkString(", ")}] >= ${shape._2}")
     }
     val selectRows: Vector[Vector[T]] = if(rows.nonEmpty) {
-      matrix.get.zipWithIndex.filter(row => rows.contains(row._2)).map(row => row._1)
+      matrix().zipWithIndex.filter(row => rows.contains(row._2)).map(row => row._1)
     } else {
-      matrix.get
+      matrix()
     }
     val selectVector: Vector[Vector[T]] = if(cols.nonEmpty) {
       selectRows.map(row => row.zipWithIndex.filter(col => cols.contains(col._2)).map(col => col._1))
@@ -409,7 +420,7 @@ object Matrix {
    * @return Matrix of sums
    */
   private def sumRow[T](matrix: Matrix[T])(implicit numeric: Numeric[T]): Matrix[T] ={
-    val vectorSum: Vector[Vector[T]] = matrix.get.map(vector => Vector(vector.sum))
+    val vectorSum: Vector[Vector[T]] = matrix().map(vector => Vector(vector.sum))
     vectorToMatrix(vectorSum)
   }
 
@@ -421,7 +432,7 @@ object Matrix {
    * @return Matrix of sums
    */
   private def sumColumn[T](matrix: Matrix[T])(implicit numeric: Numeric[T]): Matrix[T] ={
-    val vectorSum: Vector[Vector[T]] = Vector(matrix.get.transpose.map(_.sum))
+    val vectorSum: Vector[Vector[T]] = Vector(matrix().transpose.map(_.sum))
     vectorToMatrix(vectorSum)
   }
 
@@ -433,7 +444,7 @@ object Matrix {
    * @return Matrix of sum
    */
   private def sumMatrix[T](matrix: Matrix[T])(implicit numeric: Numeric[T]): Matrix[T] ={
-    vectorToMatrix(Vector(Vector(matrix.get.map(row => row.sum).sum)))
+    vectorToMatrix(Vector(Vector(matrix().map(row => row.sum).sum)))
   }
 
   /** Compute average of a matrix
@@ -507,13 +518,12 @@ object Matrix {
       throw new IllegalArgumentException("Matrix is empty")
     }
     val avgRows: Matrix[Double] = avgRow(matrix)
-    val vectors: Vector[Vector[T]] = matrix.get
     val rowLength: Double = matrix.shape._1.toDouble
-    val covVectors: Vector[Vector[Double]] = vectors.indices.map(rowIndexA => {
-      vectors.indices.map(rowIndexB => {
-        vectors(rowIndexA).zip(vectors(rowIndexB)).map(pair => {
+    val covVectors: Vector[Vector[Double]] = matrix().indices.map(rowIndexA => {
+      matrix().indices.map(rowIndexB => {
+        matrix(rowIndexA).zip(matrix(rowIndexB)).map(pair => {
           pair._1 * pair._2
-        }).sum.toDouble / rowLength - avgRows.get(rowIndexA)(0) * avgRows.get(rowIndexB)(0)
+        }).sum.toDouble / rowLength - avgRows(rowIndexA)(0) * avgRows(rowIndexB)(0)
       }).toVector
     }).toVector
     vectorToMatrix(covVectors)
@@ -547,7 +557,7 @@ object Matrix {
     if(matrix.shape._2 == 0){
       throw new IllegalArgumentException("Invalid matrix: no columns")
     }
-    val variances: Vector[Double] = matrix.get.map(row => {
+    val variances: Vector[Double] = matrix().map(row => {
       (row.map(c => c * c).sum.toDouble / row.length.toDouble) - scala.math.pow(row.sum.toDouble / row.length.toDouble, 2)
     })
     vectorToMatrix(Vector(variances))
@@ -564,7 +574,7 @@ object Matrix {
     if(matrix.shape._1 == 0){
       throw new IllegalArgumentException("Invalid matrix: no rows")
     }
-    val variances: Vector[Double] = matrix.get.transpose.map(row => {
+    val variances: Vector[Double] = matrix().transpose.map(row => {
       (row.map(c => c * c).sum.toDouble / row.length.toDouble) - scala.math.pow(row.sum.toDouble / row.length.toDouble, 2)
     })
     vectorToMatrix(Vector(variances))
@@ -612,7 +622,7 @@ object Matrix {
       throw new IllegalArgumentException("Invalid matrices shapes: " +
         s"matrixA has ${matrixA.shape._2} columns and matrixB has ${matrixB.shape._2} columns.")
     }
-    vectorToMatrix(matrixA.get ++ matrixB.get)
+    vectorToMatrix(matrixA() ++ matrixB())
   }
 
   /** Concatenate two matrices on columns
@@ -627,7 +637,7 @@ object Matrix {
       throw new IllegalArgumentException("Invalid matrices shapes: " +
         s"matrixA has ${matrixA.shape._1} rows and matrixB has ${matrixB.shape._1} rows.")
     }
-    vectorToMatrix(matrixA.get.zip(matrixB.get).map(pair => pair._1 ++ pair._2))
+    vectorToMatrix(matrixA().zip(matrixB()).map(pair => pair._1 ++ pair._2))
   }
 
 }

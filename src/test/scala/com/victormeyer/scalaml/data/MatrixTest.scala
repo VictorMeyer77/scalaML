@@ -16,15 +16,52 @@ class MatrixTest extends AnyFlatSpec {
 
     // when
 
-    val vectorA: Vector[Vector[Int]] = matrixA.get
-    val vectorB: Vector[Vector[Int]] = matrixB.get
-    val vectorC: Vector[Vector[Int]] = matrixC.get
+    val vectorA: Vector[Vector[Int]] = matrixA()
+    val vectorB: Vector[Vector[Int]] = matrixB()
+    val vectorC: Vector[Vector[Int]] = matrixC()
 
     // then
 
     assert(vectorA.equals(Vector(Vector(5, 5, 5), Vector(5, 5, 5))))
     assert(vectorB.equals(Vector()))
     assert(vectorC.equals(Vector(Vector(null, null), Vector(null, null))))
+
+  }
+
+  "Matrix()" should "return specific row" in {
+
+    // given
+
+    val matrix: Matrix[Int] = Matrix.vectorToMatrix(Vector(Vector(1, 2, 3), Vector(4, 5, 6)))
+
+    // when
+
+    val vector: Vector[Int] = matrix(1)
+
+    // then
+
+    assert(vector.equals(Vector(4, 5, 6)))
+
+  }
+
+  "Matrix()" should "raise exception when index is wrong" in {
+
+    // given
+
+    val matrix: Matrix[Int] = Matrix.vectorToMatrix(Vector(Vector(1, 2, 3), Vector(4, 5, 6)))
+    var errorMessage: String = ""
+
+    // when
+
+    try {
+      matrix(10)
+    } catch {
+      case e: IndexOutOfBoundsException => errorMessage = e.getMessage
+    }
+
+    // then
+
+    assert(errorMessage == "Invalid index: 10 >= 2")
 
   }
 
@@ -84,7 +121,7 @@ class MatrixTest extends AnyFlatSpec {
 
     // then
 
-    assert(matrix.get.equals(Vector(Vector(1, 2, 3, 4, 5), Vector(6, 7, 8, 9, 10), Vector(11, 12, 13, 14, 15))))
+    assert(matrix().equals(Vector(Vector(1, 2, 3, 4, 5), Vector(6, 7, 8, 9, 10), Vector(11, 12, 13, 14, 15))))
 
   }
 
@@ -150,7 +187,7 @@ class MatrixTest extends AnyFlatSpec {
 
     // then
 
-    assert(matrix.get.equals(Vector(Vector(5, 5, 5), Vector(5, 5, 15), Vector(5, 5, 5))))
+    assert(matrix().equals(Vector(Vector(5, 5, 5), Vector(5, 5, 15), Vector(5, 5, 5))))
 
   }
 
@@ -195,7 +232,7 @@ class MatrixTest extends AnyFlatSpec {
 
     // then
 
-    assert(matrix.get.equals(Vector(Vector(5, 5, 5), Vector(2, 21, 32), Vector(5, 5, 5))))
+    assert(matrix().equals(Vector(Vector(5, 5, 5), Vector(2, 21, 32), Vector(5, 5, 5))))
 
   }
 
@@ -240,7 +277,7 @@ class MatrixTest extends AnyFlatSpec {
 
     // then
 
-    assert(matrix.get.equals(Vector(Vector(5, 2, 5), Vector(5, 21, 5), Vector(5, 32, 5))))
+    assert(matrix().equals(Vector(Vector(5, 2, 5), Vector(5, 21, 5), Vector(5, 32, 5))))
 
   }
 
@@ -298,7 +335,7 @@ class MatrixTest extends AnyFlatSpec {
 
     // then
 
-    assert(matrix.get.equals(Vector(Vector(1, 2, 3), Vector(5, 6, 7))))
+    assert(matrix().equals(Vector(Vector(1, 2, 3), Vector(5, 6, 7))))
 
   }
 
@@ -335,7 +372,7 @@ class MatrixTest extends AnyFlatSpec {
 
     // then
 
-    assert(matrix.get.equals(Vector(Vector(1, 3), Vector(2, 4), Vector(5, 7))))
+    assert(matrix().equals(Vector(Vector(1, 3), Vector(2, 4), Vector(5, 7))))
 
   }
 
@@ -548,9 +585,9 @@ class MatrixTest extends AnyFlatSpec {
 
     // then
 
-    for(i <- matrix.get.indices) {
-      for(j <- matrix.get(i).indices) {
-        assert((computeMatrix.get(i)(j) - matrix.get(i)(j) / 6.0) *  (computeMatrix.get(i)(j) - matrix.get(i)(j) / 6.0) < 0.000001)
+    for(i <- matrix().indices) {
+      for(j <- matrix(i).indices) {
+        assert((computeMatrix(i)(j) - matrix(i)(j) / 6.0) *  (computeMatrix(i)(j) - matrix(i)(j) / 6.0) < 0.000001)
       }
     }
 
@@ -568,9 +605,9 @@ class MatrixTest extends AnyFlatSpec {
 
     // then
 
-    for(i <- matrix.get.indices) {
-      for(j <- matrix.get(i).indices) {
-        assert((computeMatrix.get(i)(j) - scala.math.pow(matrix.get(i)(j), 3.0)) *  (computeMatrix.get(i)(j) - scala.math.pow(matrix.get(i)(j), 3.0)) < 0.000001)
+    for(i <- matrix().indices) {
+      for(j <- matrix(i).indices) {
+        assert((computeMatrix(i)(j) - scala.math.pow(matrix(i)(j), 3.0)) *  (computeMatrix(i)(j) - scala.math.pow(matrix(i)(j), 3.0)) < 0.000001)
       }
     }
 
@@ -744,9 +781,9 @@ class MatrixTest extends AnyFlatSpec {
 
     // then
 
-    assert(newMatrixA.get.equals(Vector(Vector(1, 2, 3, 4, 5, 6), Vector(7, 8, 9, 10, 11, 12))))
-    assert(newMatrixB.get.equals(Vector(Vector(1, 2), Vector(3, 4), Vector(5, 6), Vector(7, 8), Vector(9, 10), Vector(11, 12))))
-    assert(newMatrixC.get.equals(Vector(Vector(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12))))
+    assert(newMatrixA().equals(Vector(Vector(1, 2, 3, 4, 5, 6), Vector(7, 8, 9, 10, 11, 12))))
+    assert(newMatrixB().equals(Vector(Vector(1, 2), Vector(3, 4), Vector(5, 6), Vector(7, 8), Vector(9, 10), Vector(11, 12))))
+    assert(newMatrixC().equals(Vector(Vector(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12))))
 
   }
 
@@ -793,9 +830,9 @@ class MatrixTest extends AnyFlatSpec {
 
     // then
 
-    assert(selectMatrixA.get.equals(Vector(Vector(1, 2, 3, 4), Vector(9, 10, 11, 12))))
-    assert(selectMatrixB.get.equals(Vector(Vector(2, 4), Vector(6, 8), Vector(10, 12))))
-    assert(selectMatrixC.get.equals(Vector(Vector(2, 4), Vector(10, 12))))
+    assert(selectMatrixA().equals(Vector(Vector(1, 2, 3, 4), Vector(9, 10, 11, 12))))
+    assert(selectMatrixB().equals(Vector(Vector(2, 4), Vector(6, 8), Vector(10, 12))))
+    assert(selectMatrixC().equals(Vector(Vector(2, 4), Vector(10, 12))))
 
   }
 
@@ -832,7 +869,7 @@ class MatrixTest extends AnyFlatSpec {
 
     // then
 
-    assert(sumMatrix.get.equals(Vector(Vector(10), Vector(26), Vector(42))))
+    assert(sumMatrix().equals(Vector(Vector(10), Vector(26), Vector(42))))
 
   }
 
@@ -848,7 +885,7 @@ class MatrixTest extends AnyFlatSpec {
 
     // then
 
-    assert(sumMatrix.get.equals(Vector(Vector(15, 18, 21, 24))))
+    assert(sumMatrix().equals(Vector(Vector(15, 18, 21, 24))))
 
   }
 
@@ -864,7 +901,7 @@ class MatrixTest extends AnyFlatSpec {
 
     // then
 
-    assert(sumMatrix.get.equals(Vector(Vector(78))))
+    assert(sumMatrix().equals(Vector(Vector(78))))
 
   }
 
@@ -880,8 +917,8 @@ class MatrixTest extends AnyFlatSpec {
 
     // then
 
-    for(i <- computeMatrix.get.indices){
-      assert(scala.math.pow(computeMatrix.get(i)(0) - matrix.get(i).sum / matrix.get(i).length.toDouble, 2) < 0.00001)
+    for(i <- computeMatrix().indices){
+      assert(scala.math.pow(computeMatrix(i)(0) - matrix(i).sum / matrix(i).length.toDouble, 2) < 0.00001)
     }
 
   }
@@ -912,7 +949,7 @@ class MatrixTest extends AnyFlatSpec {
     // given
 
     val matrix: Matrix[Int] = Matrix.vectorToMatrix(Vector(Vector(1, 2, 3, 4), Vector(5, 6, 7, 8), Vector(9, 10, 11, 12)))
-    val transposeVectors: Vector[Vector[Int]] = matrix.get.transpose
+    val transposeVectors: Vector[Vector[Int]] = matrix().transpose
 
     // when
 
@@ -920,8 +957,8 @@ class MatrixTest extends AnyFlatSpec {
 
     // then
 
-    for(i <- computeMatrix.get(0).indices){
-      assert(scala.math.pow(computeMatrix.get(0)(i) - transposeVectors(i).sum / transposeVectors(i).length.toDouble, 2) < 0.00001)
+    for(i <- computeMatrix(0).indices){
+      assert(scala.math.pow(computeMatrix(0)(i) - transposeVectors(i).sum / transposeVectors(i).length.toDouble, 2) < 0.00001)
     }
 
   }
@@ -959,7 +996,7 @@ class MatrixTest extends AnyFlatSpec {
 
     // then
 
-    assert(scala.math.pow(computeMatrix.get(0)(0) - 78.0 / 12.0, 2) < 0.00001)
+    assert(scala.math.pow(computeMatrix(0)(0) - 78.0 / 12.0, 2) < 0.00001)
 
   }
 
@@ -1037,9 +1074,9 @@ class MatrixTest extends AnyFlatSpec {
 
     // then
 
-    for(i <- targetMatrix.get.indices) {
-      for(j <- targetMatrix.get(i).indices) {
-        assert(scala.math.pow(covariance.get(i)(j) - targetMatrix.get(i)(j), 2) < 0.000001)
+    for(i <- targetMatrix().indices) {
+      for(j <- targetMatrix(i).indices) {
+        assert(scala.math.pow(covariance(i)(j) - targetMatrix(i)(j), 2) < 0.000001)
       }
     }
 
@@ -1144,9 +1181,9 @@ class MatrixTest extends AnyFlatSpec {
 
     // then
 
-    for(i <- targetMatrix.get.indices) {
-      for(j <- targetMatrix.get(i).indices) {
-        assert(scala.math.pow(variance.get(i)(j) - targetMatrix.get(i)(j), 2) < 0.000001)
+    for(i <- targetMatrix().indices) {
+      for(j <- targetMatrix(i).indices) {
+        assert(scala.math.pow(variance(i)(j) - targetMatrix(i)(j), 2) < 0.000001)
       }
     }
 
@@ -1191,9 +1228,9 @@ class MatrixTest extends AnyFlatSpec {
 
     // then
 
-    for(i <- targetMatrix.get.indices) {
-      for(j <- targetMatrix.get(i).indices) {
-        assert(scala.math.pow(variance.get(i)(j) - targetMatrix.get(i)(j), 2) < 0.000001)
+    for(i <- targetMatrix().indices) {
+      for(j <- targetMatrix(i).indices) {
+        assert(scala.math.pow(variance(i)(j) - targetMatrix(i)(j), 2) < 0.000001)
       }
     }
 
