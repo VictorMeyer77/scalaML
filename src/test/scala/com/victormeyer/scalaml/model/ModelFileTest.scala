@@ -55,7 +55,8 @@ class ModelFileTest extends AnyFlatSpec with PrivateMethodTester {
 
     // then
 
-    assert(modelToLoad.toString == modelToSave.toString)
+    assert(modelToLoad.alpha ==  0.8172)
+    assert(modelToLoad.beta == 71.91)
 
     // after
 

@@ -7,7 +7,7 @@ import com.victormeyer.scalaml.model.Model
  * @param alpha Gradient of the line
  * @param beta Vertical intercept
  */
-class SimpleLinearRegressionModel(alpha: Double, beta: Double) extends Model {
+class SimpleLinearRegressionModel(val alpha: Double, val beta: Double) extends Model {
 
   /** Create Json with alpha and beta
    *
