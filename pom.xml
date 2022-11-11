@@ -170,6 +170,12 @@
             <scope>test</scope>
         </dependency>
 
+        <dependency>
+            <groupId>org.scalanlp</groupId>
+            <artifactId>breeze_${scala.version.major}</artifactId>
+            <version>2.1.0</version>
+        </dependency>
+
         <!-- output -->
 
         <dependency>
