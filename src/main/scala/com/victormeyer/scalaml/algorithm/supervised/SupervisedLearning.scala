@@ -1,17 +1,16 @@
 package com.victormeyer.scalaml.algorithm.supervised
 
-import com.victormeyer.scalaml.data.Matrix
+import breeze.linalg.DenseMatrix
 import com.victormeyer.scalaml.model.{Model, ModelFile}
 
-/** Trait which must implemented by all supervised algorithm
+/** Trait which must implemented by all supervised algorithm.
  *
- * @tparam T Type of matrix
  */
-trait SupervisedLearning[T] {
+trait SupervisedLearning {
 
   var model: Model = _
-  var xTrain: Matrix[T] = _
-  var yTrain: Matrix[T] = _
+  var xTrain: DenseMatrix[Double] = _
+  var yTrain: DenseMatrix[Double] = _
 
   /** Load model from file
    *
@@ -35,22 +34,21 @@ trait SupervisedLearning[T] {
    * @param xTrain Exogenous variables
    * @param yTrain Endogenous variables
    */
-  def setData(xTrain: Matrix[T], yTrain: Matrix[T]): Unit ={
+  def setData(xTrain: DenseMatrix[Double], yTrain: DenseMatrix[Double]): Unit ={
     this.xTrain = xTrain
     this.yTrain = yTrain
   }
 
   /** Compute training
    *
-   * @param numeric Numeric instance
    */
-  def fit(implicit numeric: Numeric[T]): Unit
+  def fit(): Unit
 
   /** Apply model on matrix
    *
    * @param x Matrix to predict
-   * @return
+   * @return Matrix of predictions
    */
-  def predict(x: Matrix[T]): Matrix[Double]
+  def predict(x: DenseMatrix[Double]): DenseMatrix[Double]
 
 }
