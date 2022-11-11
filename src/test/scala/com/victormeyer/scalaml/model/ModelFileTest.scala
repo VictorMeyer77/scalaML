@@ -1,6 +1,6 @@
 package com.victormeyer.scalaml.model
 
-import com.victormeyer.scalaml.model.algorithm.SimpleLinearRegressionModel
+import com.victormeyer.scalaml.model.algorithm.LinearRegressionModel
 import org.scalatest.PrivateMethodTester
 import org.scalatest.flatspec.AnyFlatSpec
 
@@ -13,7 +13,7 @@ class ModelFileTest extends AnyFlatSpec with PrivateMethodTester {
 
     // given
 
-    val model: SimpleLinearRegressionModel = new SimpleLinearRegressionModel(0.8172, 71.91)
+    val model: LinearRegressionModel = new LinearRegressionModel(Array(0.8172, 9.0918))
 
     // when
 
@@ -30,10 +30,11 @@ class ModelFileTest extends AnyFlatSpec with PrivateMethodTester {
                                   |  "modelName": "MySimpleModel",""".stripMargin))
     assert(fileContent.contains(""""dateMaj""""))
     assert(fileContent.contains("""  "model": {
-                                  |    "alpha": 0.8172,
-                                  |    "beta": 71.91
-                                  |  }
-                                  |}""".stripMargin))
+                                  |    "alpha": [
+                                  |      0.8172,
+                                  |      9.0918
+                                  |    ]
+                                  |  }""".stripMargin))
 
     // after
 
@@ -45,18 +46,17 @@ class ModelFileTest extends AnyFlatSpec with PrivateMethodTester {
 
     // given
 
-    val modelToSave: SimpleLinearRegressionModel = new SimpleLinearRegressionModel(0.8172, 71.91)
-    ModelFile.saveModel("src/test/resources/model", "SimpleLinearRegression", "MySimpleModelToLoad", modelToSave)
+    val modelToSave: LinearRegressionModel = new LinearRegressionModel(Array(0.8172, 9.0918))
+    ModelFile.saveModel("src/test/resources/model", "LinearRegression", "MySimpleModelToLoad", modelToSave)
     val outputFilePath: String = new File("src/test/resources/model").listFiles.filter(_.getName.contains("MySimpleModelToLoad"))(0).getAbsolutePath
 
     // when
 
-    val modelToLoad: SimpleLinearRegressionModel = ModelFile.loadModel(outputFilePath).asInstanceOf[SimpleLinearRegressionModel]
+    val modelToLoad: LinearRegressionModel = ModelFile.loadModel(outputFilePath).asInstanceOf[LinearRegressionModel]
 
     // then
 
-    assert(modelToLoad.alpha ==  0.8172)
-    assert(modelToLoad.beta == 71.91)
+    assert(modelToLoad.alpha sameElements Array(0.8172, 9.0918))
 
     // after
 
@@ -70,7 +70,7 @@ class ModelFileTest extends AnyFlatSpec with PrivateMethodTester {
 
     val getModelType: PrivateMethod[String] = PrivateMethod[String]('getModelType)
     val modelJson: String = """{
-                              |  "modelType": "SimpleLinearRegression",
+                              |  "modelType": "LinearRegression",
                               |  "modelName": "name1",
                               |  "dateMaj": 1667848005963,
                               |  "model": {
@@ -85,7 +85,7 @@ class ModelFileTest extends AnyFlatSpec with PrivateMethodTester {
 
     // then
 
-    assert(modelType == "SimpleLinearRegression")
+    assert(modelType == "LinearRegression")
 
   }
 

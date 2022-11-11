@@ -8,7 +8,7 @@ import java.nio.file.{Files, Paths}
 import java.util.Calendar
 import scala.io.{BufferedSource, Source}
 
-/** Gather method to save and load each type of model
+/** Gather method to save and load each type of model.
  *
  */
 object ModelFile extends Logging {

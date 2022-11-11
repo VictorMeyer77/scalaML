@@ -1,6 +1,6 @@
 package com.victormeyer.scalaml.model
 
-/** Represent model parameter which compose json model file
+/** Represent model parameter which compose json model file.
  *
  * @param modelType Type of the model, which equal to class name in algorithm package
  * @param modelName Name of the model

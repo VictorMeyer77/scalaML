@@ -1,6 +1,6 @@
 package com.victormeyer.scalaml.model
 
-/** Trait which must be implemented by all model classes to unify saving and loading
+/** Trait which must be implemented by all model classes to unify saving and loading.
  *
  */
 trait Model {
