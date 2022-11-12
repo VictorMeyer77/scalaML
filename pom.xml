@@ -11,6 +11,7 @@
     <properties>
         <scala.version.major>2.12</scala.version.major>
         <scala.version.minor>2.12.11</scala.version.minor>
+        <breeze.version>2.1.0</breeze.version>
         <maven.compiler.source>18</maven.compiler.source>
         <maven.compiler.target>18</maven.compiler.target>
     </properties>
@@ -170,19 +171,21 @@
             <scope>test</scope>
         </dependency>
 
+        <!-- breeze -->
+
         <dependency>
             <groupId>org.scalanlp</groupId>
             <artifactId>breeze_${scala.version.major}</artifactId>
-            <version>2.1.0</version>
+            <version>${breeze.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.scalanlp</groupId>
+            <artifactId>breeze-viz_${scala.version.major}</artifactId>
+            <version>${breeze.version}</version>
         </dependency>
 
         <!-- output -->
-
-        <dependency>
-            <groupId>org.plotly-scala</groupId>
-            <artifactId>plotly-render_${scala.version.major}</artifactId>
-            <version>0.8.4</version>
-        </dependency>
 
         <dependency>
             <groupId>com.google.code.gson</groupId>
