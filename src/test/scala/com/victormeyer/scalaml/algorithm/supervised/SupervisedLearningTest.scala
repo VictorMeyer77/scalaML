@@ -8,33 +8,13 @@ import java.io.File
 
 class SupervisedLearningTest extends AnyFlatSpec {
 
-  "SupervisedLearning.setData" should "hydrate xTrain and yTrain" in {
-
-    // given
-
-    val xTrain: DenseMatrix[Double] = DenseMatrix(1.0, 2.0, 3.0)
-    val yTrain: DenseMatrix[Double] = DenseMatrix(2.0, 4.0, 6.0)
-    val linearRegression: LinearRegression = new LinearRegression
-
-    // when
-
-    linearRegression.setData(xTrain, yTrain)
-
-    // then
-
-    assert(linearRegression.xTrain == xTrain)
-    assert(linearRegression.yTrain == yTrain)
-
-  }
-
   "SupervisedLearning.saveModel" should "save model in json file" in {
 
     // given
 
     val xTrain: DenseMatrix[Double] = DenseMatrix(1.0, 2.0, 3.0)
     val yTrain: DenseMatrix[Double] = DenseMatrix(2.0, 4.0, 6.0)
-    val linearRegression: LinearRegression = new LinearRegression
-    linearRegression.setData(xTrain, yTrain)
+    val linearRegression: LinearRegression = new LinearRegression(xTrain, yTrain)
     linearRegression.fit()
 
     // when
@@ -57,8 +37,7 @@ class SupervisedLearningTest extends AnyFlatSpec {
 
     val xTrain: DenseMatrix[Double] = DenseMatrix(1.0, 2.0, 3.0)
     val yTrain: DenseMatrix[Double] = DenseMatrix(2.0, 4.0, 6.0)
-    val linearRegression: LinearRegression = new LinearRegression
-    linearRegression.setData(xTrain, yTrain)
+    val linearRegression: LinearRegression = new LinearRegression(xTrain, yTrain)
     linearRegression.fit()
     linearRegression.saveModel("src/test/resources/model", "MyFooModelToLoad")
     val modelPath: String = new File("src/test/resources/model").listFiles.filter(_.getName.contains("MyFooModelToLoad"))(0).getAbsolutePath
