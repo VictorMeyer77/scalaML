@@ -13,7 +13,7 @@ class LinearRegressionModel(var alpha: Array[Double]) extends Model {
    *  @return Json format string
    */
   override def toString: String = {
-    s"""{\"alpha\": [${alpha.mkString(", ")}]}"""
+    s"""{"alpha": [${alpha.mkString(", ")}]}"""
   }
 
 }

@@ -12,8 +12,7 @@ class LinearRegressionTest extends AnyFlatSpec {
 
     val xTrain: DenseMatrix[Double] = DenseMatrix(1.0, 2.0, 3.0)
     val yTrain: DenseMatrix[Double] = DenseMatrix(2.0, 4.0, 6.0)
-    val linearRegression: LinearRegression = new LinearRegression
-    linearRegression.setData(xTrain, yTrain)
+    val linearRegression: LinearRegression = new LinearRegression(xTrain, yTrain)
 
     // when
 
@@ -31,8 +30,7 @@ class LinearRegressionTest extends AnyFlatSpec {
 
     val xTrain: DenseMatrix[Double] = DenseMatrix((1.1, 2.0, 3.0), (2.0, 1.2, 3.0))
     val yTrain: DenseMatrix[Double] = DenseMatrix(3.0, 2.0)
-    val linearRegression: LinearRegression = new LinearRegression
-    linearRegression.setData(xTrain, yTrain)
+    val linearRegression: LinearRegression = new LinearRegression(xTrain, yTrain)
 
     // when
 
@@ -51,8 +49,7 @@ class LinearRegressionTest extends AnyFlatSpec {
     val xTrain: DenseMatrix[Double] = DenseMatrix(1.0, 2.0, 3.0)
     val yTrain: DenseMatrix[Double] = DenseMatrix(2.0, 4.0, 6.0)
     val xTest: DenseMatrix[Double] = DenseMatrix(3.0, 6.0, 9.0)
-    val linearRegression: LinearRegression = new LinearRegression
-    linearRegression.setData(xTrain, yTrain)
+    val linearRegression: LinearRegression = new LinearRegression(xTrain, yTrain)
     linearRegression.fit()
 
     // when
@@ -74,8 +71,7 @@ class LinearRegressionTest extends AnyFlatSpec {
     val xTrain: DenseMatrix[Double] = DenseMatrix((1.0, 8.0), (1.0, 11.0))
     val yTrain: DenseMatrix[Double] = DenseMatrix(3.0, 2.0)
     val xTest: DenseMatrix[Double] = DenseMatrix((2.0, 5.0), (1.0, 12.0))
-    val linearRegression: LinearRegression = new LinearRegression
-    linearRegression.setData(xTrain, yTrain)
+    val linearRegression: LinearRegression = new LinearRegression(xTrain, yTrain)
     linearRegression.fit()
 
     // when
