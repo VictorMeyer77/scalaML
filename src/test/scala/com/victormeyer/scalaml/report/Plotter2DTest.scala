@@ -1,4 +1,4 @@
-package com.victormeyer.scalaml.plotter
+package com.victormeyer.scalaml.report
 
 import breeze.linalg.DenseMatrix
 import breeze.plot.{Figure, Plot}
