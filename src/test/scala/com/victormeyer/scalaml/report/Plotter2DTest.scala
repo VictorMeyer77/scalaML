@@ -79,16 +79,15 @@ class Plotter2DTest extends AnyFlatSpec with PrivateMethodTester {
 
     // when
 
-    Plotter2D.display("src/test/resources/report", "MyTestPlot")
-    val outputDirectory: String = new File("src/test/resources/report").listFiles.filter(_.getName.contains("MyTestPlot"))(0).getAbsolutePath
+    val graphicName: String = Plotter2D.display("src/test/resources/report", "MyTestPlot")
 
     // then
 
-    assert(outputDirectory.split("/")(outputDirectory.split("/").length - 1).length == 28)
+    assert(graphicName.length == 28)
 
     // after
 
-    new File(outputDirectory).delete()
+    new File(s"src/test/resources/report/$graphicName").delete()
 
   }
 

@@ -58,11 +58,14 @@ object Plotter2D {
    *
    * @param outputDirectory Output directory
    * @param plotName File name. File will be timestamping
+   * @return Name of output png
    */
-  def display(outputDirectory: String="target/plot", plotName: String="graphic"): Unit ={
+  def display(outputDirectory: String="target/plot", plotName: String="graphic"): String ={
     Files.createDirectories(Paths.get(outputDirectory))
+    val imgName: String = plotName + "-" + Calendar.getInstance().getTimeInMillis + ".png"
     figure.rows -= 1
-    figure.saveas(Paths.get(outputDirectory, plotName + "-" + Calendar.getInstance().getTimeInMillis).toString + ".png")
+    figure.saveas(Paths.get(outputDirectory, imgName).toString)
+    imgName
   }
 
 }
