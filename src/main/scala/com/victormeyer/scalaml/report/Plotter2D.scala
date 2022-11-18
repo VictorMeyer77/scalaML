@@ -56,13 +56,13 @@ object Plotter2D {
 
   /** Print and save the figure in a png.
    *
-   * @param outputPath Output directory
+   * @param outputDirectory Output directory
    * @param plotName File name. File will be timestamping
    */
-  def display(outputPath: String="target/plot", plotName: String="graphic"): Unit ={
-    Files.createDirectories(Paths.get(outputPath))
+  def display(outputDirectory: String="target/plot", plotName: String="graphic"): Unit ={
+    Files.createDirectories(Paths.get(outputDirectory))
     figure.rows -= 1
-    figure.saveas(Paths.get(outputPath, plotName + "-" + Calendar.getInstance().getTimeInMillis).toString + ".png")
+    figure.saveas(Paths.get(outputDirectory, plotName + "-" + Calendar.getInstance().getTimeInMillis).toString + ".png")
   }
 
 }
