@@ -6,7 +6,7 @@ import java.nio.charset.StandardCharsets
 import java.nio.file.{Files, Paths}
 import scala.collection.mutable
 
-/** Object use to create a html file
+/** Object use to create a html file.
  *
  */
 object HtmlGenerator {
